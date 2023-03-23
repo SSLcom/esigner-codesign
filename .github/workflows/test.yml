@@ -1,0 +1,93 @@
+name: 'esigner-codesign'
+
+on: [push]
+
+env:
+  FILE_NAME: codesign.ps1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: |
+          npm --version && node --version
+          npm install
+          npm run all
+
+  sign:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/${{env.FILE_NAME}}
+
+      - uses: ./
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${GITHUB_WORKSPACE}/example/${{env.FILE_NAME}}
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+          malware_block: false
+          environment_name: TEST
+
+  sign-override:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/${{env.FILE_NAME}}
+
+      - uses: ./
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${GITHUB_WORKSPACE}/example/${{env.FILE_NAME}}
+          malware_block: false
+          override: true
+          environment_name: TEST
+          clean_logs: true
+
+  sign-external:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/${{env.FILE_NAME}}
+
+      - uses: sslcom/esigner-codesign@main
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${GITHUB_WORKSPACE}/example/${{env.FILE_NAME}}
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+          malware_block: false
+          environment_name: TEST
