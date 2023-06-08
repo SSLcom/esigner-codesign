@@ -18,6 +18,7 @@ export const INPUT_CREDENTIAL_ID = 'credential_id';
 export const INPUT_TOTP_SECRET = 'totp_secret';
 export const INPUT_PROGRAM_NAME = 'program_name';
 export const INPUT_FILE_PATH = 'file_path';
+export const INPUT_DIR_PATH = 'input_dir_path';
 export const INPUT_OUTPUT_PATH = 'output_path';
 export const INPUT_MALWARE_BLOCK = 'malware_block';
 export const INPUT_OVERRIDE = 'override';
