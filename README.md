@@ -32,6 +32,9 @@
     # Supported File Types: acm, ax, bin, cab, cpl, dll, drv, efi, exe, mui, ocx, scr, sys, tsp, msi, ps1, ps1xml, js, vbs, wsf, jar
     file_path: ${GITHUB_WORKSPACE}/test/src/build/HelloWorld.jar
 
+    # Input directory for code objects to be signed, have hashes computed, or pick unsigned files and corresponding hashes for signing.
+    input_dir_path: ${GITHUB_WORKSPACE}/test/src/build
+
     # Directory where signed code object(s) will be written.
     output_path: ${GITHUB_WORKSPACE}/artifacts
 
