@@ -27,6 +27,9 @@ inputs:
   file_path:
     description: ""
     required: false
+  dir_path:
+    description: ""
+    required: false    
   output_path:
     description: ""
     required: false
