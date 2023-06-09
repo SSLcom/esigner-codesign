@@ -8,8 +8,9 @@ import {
     INPUT_COMMAND,
     INPUT_CREDENTIAL_ID,
     INPUT_FILE_PATH,
-    INPUT_DIR_PATH,
+    INPUT_INPUT_DIR_PATH,
     INPUT_MALWARE_BLOCK,
+    INPUT_OUTPUT_DIR_PATH,
     INPUT_OUTPUT_PATH,
     INPUT_OVERRIDE,
     INPUT_PASSWORD,
@@ -99,10 +100,12 @@ export function inputCommands(): string {
     command = setCommand(INPUT_TOTP_SECRET, command);
     command = setCommand(INPUT_PROGRAM_NAME, command);
     command = setCommand(INPUT_FILE_PATH, command);
-    command = setCommand(INPUT_DIR_PATH, command);
+    command = setCommand(INPUT_INPUT_DIR_PATH, command);
+    command = setCommand(INPUT_OUTPUT_DIR_PATH, command);
     command = setCommand(INPUT_OUTPUT_PATH, command);
     command = setCommand(INPUT_OVERRIDE, command);
     command = setCommand(INPUT_MALWARE_BLOCK, command);
+
     return command;
 }
 
@@ -125,9 +128,12 @@ export function setCommand(inputKey: string, command: string): string {
     } else if (inputKey == INPUT_FILE_PATH) {
         input = path.normalize(input);
         command = `${command} -input_file_path=${input}`;
-    } else if (inputKey == INPUT_DIR_PATH) {
+    } else if (inputKey == INPUT_INPUT_DIR_PATH) {
         input = path.normalize(input);
         command = `${command} -input_dir_path=${input}`;
+    } else if (inputKey == INPUT_OUTPUT_DIR_PATH) {
+        input = path.normalize(input);
+        command = `${command} -output_dir_path=${input}`;
     } else if (inputKey == INPUT_OUTPUT_PATH) {
         input = path.normalize(input);
         if (fs.existsSync(input)) {
