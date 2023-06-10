@@ -26,7 +26,7 @@ exports.CODESIGNTOOL_DEMO_PROPERTIES = 'CLIENT_ID=qOUeZCCzSqgA93acB3LYq6lBNjgZdi
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_OUTPUT_DIR_PATH = exports.INPUT_INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
+exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
 exports.MACOS_JAVA_CONTENT_POSTFIX = 'Contents/Home';
 exports.UNIX = 'UNIX';
 exports.MACOS = 'MACOS';
@@ -43,8 +43,7 @@ exports.INPUT_CREDENTIAL_ID = 'credential_id';
 exports.INPUT_TOTP_SECRET = 'totp_secret';
 exports.INPUT_PROGRAM_NAME = 'program_name';
 exports.INPUT_FILE_PATH = 'file_path';
-exports.INPUT_INPUT_DIR_PATH = 'input_dir_path';
-exports.INPUT_OUTPUT_DIR_PATH = 'output_dir_path';
+exports.INPUT_DIR_PATH = 'dir_path';
 exports.INPUT_OUTPUT_PATH = 'output_path';
 exports.INPUT_MALWARE_BLOCK = 'malware_block';
 exports.INPUT_OVERRIDE = 'override';
@@ -717,8 +716,7 @@ function inputCommands() {
     command = setCommand(constants_1.INPUT_TOTP_SECRET, command);
     command = setCommand(constants_1.INPUT_PROGRAM_NAME, command);
     command = setCommand(constants_1.INPUT_FILE_PATH, command);
-    command = setCommand(constants_1.INPUT_INPUT_DIR_PATH, command);
-    command = setCommand(constants_1.INPUT_OUTPUT_DIR_PATH, command);
+    command = setCommand(constants_1.INPUT_DIR_PATH, command);
     command = setCommand(constants_1.INPUT_OUTPUT_PATH, command);
     command = setCommand(constants_1.INPUT_OVERRIDE, command);
     command = setCommand(constants_1.INPUT_MALWARE_BLOCK, command);
@@ -749,13 +747,9 @@ function setCommand(inputKey, command) {
         input = path_1.default.normalize(input);
         command = `${command} -input_file_path=${input}`;
     }
-    else if (inputKey == constants_1.INPUT_INPUT_DIR_PATH) {
+    else if (inputKey == constants_1.INPUT_DIR_PATH) {
         input = path_1.default.normalize(input);
         command = `${command} -input_dir_path=${input}`;
-    }
-    else if (inputKey == constants_1.INPUT_OUTPUT_DIR_PATH) {
-        input = path_1.default.normalize(input);
-        command = `${command} -output_dir_path=${input}`;
     }
     else if (inputKey == constants_1.INPUT_OUTPUT_PATH) {
         input = path_1.default.normalize(input);
