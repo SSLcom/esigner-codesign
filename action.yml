@@ -27,17 +27,18 @@ inputs:
   file_path:
     description: ""
     required: false
+  dir_path:
+    description: ""
+    required: false
   output_path:
     description: ""
     required: false
   malware_block:
     description: ""
     required: false
-    default: "false"
   override:
     description: ""
     required: false
-    default: "false"
   clean_logs:
     description: ""
     required: false

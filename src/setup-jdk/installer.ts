@@ -81,9 +81,7 @@ export class JavaDistribution extends JavaBase {
         return availableVersions;
     }
 
-    private getAvailableVersionsForPlatform(
-        eligibleVersions: ICorrettoAllAvailableVersions['os']['arch']['imageType'] | undefined
-    ): ICorrettoAvailableVersions[] {
+    private getAvailableVersionsForPlatform(eligibleVersions: ICorrettoAllAvailableVersions['os']['arch']['imageType'] | undefined): ICorrettoAvailableVersions[] {
         const availableVersions: ICorrettoAvailableVersions[] = [];
 
         for (const version in eligibleVersions) {
