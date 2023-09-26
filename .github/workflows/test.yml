@@ -41,6 +41,12 @@ jobs:
           malware_block: false
           environment_name: TEST
 
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign.ps1
+          path: ./artifacts/codesign.ps1
+
   sign-override:
     strategy:
       matrix:
@@ -68,6 +74,12 @@ jobs:
           environment_name: TEST
           clean_logs: true
 
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign-override.ps1
+          path: ./example/codesign.ps1
+
   sign-external:
     strategy:
       matrix:
@@ -92,6 +104,12 @@ jobs:
           malware_block: false
           environment_name: TEST
 
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign-external.ps1
+          path: ./artifacts/codesign.ps1
+
   batch-sign:
     strategy:
       matrix:
@@ -107,6 +125,8 @@ jobs:
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 1!"' > ${GITHUB_WORKSPACE}/example/batch1.ps1
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 2!"' > ${GITHUB_WORKSPACE}/example/batch2.ps1
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 3!"' > ${GITHUB_WORKSPACE}/example/batch3.ps1
+          cp ./sample/minimal.exe ${GITHUB_WORKSPACE}/example/minimal.exe
+          cp ./sample/minimal.msi ${GITHUB_WORKSPACE}/example/minimal.msi
 
       - uses: ./
         with:
@@ -118,3 +138,9 @@ jobs:
           dir_path: ${GITHUB_WORKSPACE}/example
           output_path: ${GITHUB_WORKSPACE}/artifacts
           environment_name: TEST
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: batch-sign
+          path: ./artifacts
