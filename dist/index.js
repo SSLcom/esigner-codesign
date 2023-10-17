@@ -26,7 +26,7 @@ exports.CODESIGNTOOL_DEMO_PROPERTIES = 'CLIENT_ID=qOUeZCCzSqgA93acB3LYq6lBNjgZdi
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.SUPPORT_COMMANDS = exports.ACTION_BATCH_SIGN = exports.ACTION_SIGN = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
+exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_JVM_MAX_MEMORY = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.SUPPORT_COMMANDS = exports.ACTION_BATCH_SIGN = exports.ACTION_SIGN = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
 exports.MACOS_JAVA_CONTENT_POSTFIX = 'Contents/Home';
 exports.UNIX = 'UNIX';
 exports.MACOS = 'MACOS';
@@ -55,6 +55,7 @@ exports.INPUT_MALWARE_BLOCK = 'malware_block';
 exports.INPUT_OVERRIDE = 'override';
 exports.INPUT_CLEAN_LOGS = 'clean_logs';
 exports.INPUT_ENVIRONMENT_NAME = 'environment_name';
+exports.INPUT_JVM_MAX_MEMORY = 'jvm_max_memory';
 exports.PRODUCTION_ENVIRONMENT_NAME = 'PROD';
 exports.SANDBOX_ENVIRONMENT_NAME = 'TEST';
 
@@ -208,7 +209,7 @@ const util_1 = __nccwpck_require__(4024);
 class CodeSigner {
     constructor() { }
     setup() {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const workingPath = path_1.default.resolve(process.cwd());
             (0, util_1.listFiles)(workingPath);
@@ -226,6 +227,7 @@ class CodeSigner {
             core.info(`Archive name: ${archiveName}, ${archivePath}`);
             (0, util_1.listFiles)(archivePath);
             const environment = (_a = core.getInput(constants_1.INPUT_ENVIRONMENT_NAME)) !== null && _a !== void 0 ? _a : constants_1.PRODUCTION_ENVIRONMENT_NAME;
+            const jvmMaxMemory = (_b = core.getInput(constants_1.INPUT_JVM_MAX_MEMORY)) !== null && _b !== void 0 ? _b : '2048M';
             const sourceConfig = environment == constants_1.PRODUCTION_ENVIRONMENT_NAME ? config_1.CODESIGNTOOL_PROPERTIES : config_1.CODESIGNTOOL_DEMO_PROPERTIES;
             const destConfig = path_1.default.join(archivePath, 'conf/code_sign_tool.properties');
             core.info(`Write CodeSignTool config file ${sourceConfig} to ${destConfig}`);
@@ -233,9 +235,15 @@ class CodeSigner {
             core.info(`Set CODE_SIGN_TOOL_PATH env variable: ${archivePath}`);
             process.env['CODE_SIGN_TOOL_PATH'] = archivePath;
             let execCmd = path_1.default.join(archivePath, cmd);
-            fs_1.default.chmodSync(execCmd, '0755');
+            (0, fs_1.copyFileSync)(`${workingPath}/scripts/${cmd}`, execCmd);
+            const execData = (0, fs_1.readFileSync)(execCmd, { encoding: 'utf-8', flag: 'r' });
+            const result = execData.replace(/@JVM_MAX_MEMORY/g, jvmMaxMemory);
+            core.debug(`Exec Cmd Content: ${result}`);
+            (0, fs_1.writeFileSync)(execCmd, result, { encoding: 'utf-8', flag: 'w' });
+            (0, fs_1.chmodSync)(execCmd, '0755');
             const shellCmd = (0, util_1.userShell)();
             core.info(`Shell Cmd: ${shellCmd}`);
+            core.info(`Exec Cmd : ${execCmd}`);
             execCmd = shellCmd + ' ' + execCmd;
             execCmd = execCmd.trimStart().trimEnd();
             return execCmd;

@@ -47,6 +47,10 @@ inputs:
     description: ""
     required: false
     default: "PROD"
+  jvm_max_memory:
+    description: ""
+    required: false
+    default: "1024M"
 runs:
   using: 'node16'
   main: 'dist/index.js'

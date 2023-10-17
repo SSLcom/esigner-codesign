@@ -40,6 +40,7 @@ jobs:
           output_path: ${GITHUB_WORKSPACE}/artifacts
           malware_block: false
           environment_name: TEST
+          jvm_max_memory: 2048M
 
       - name: Upload Signed Files
         uses: actions/upload-artifact@v3
@@ -138,6 +139,7 @@ jobs:
           dir_path: ${GITHUB_WORKSPACE}/example
           output_path: ${GITHUB_WORKSPACE}/artifacts
           environment_name: TEST
+          jvm_max_memory: 4096M
 
       - name: Upload Signed Files
         uses: actions/upload-artifact@v3

@@ -49,5 +49,8 @@
     
     # Clean log files after code signing operations
     clean_logs: true
+
+    # Maximumx JVM heap size
+    jvm_max_memory: 1024M
 ```
 <!-- end usage -->

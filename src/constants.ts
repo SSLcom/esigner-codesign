@@ -32,6 +32,7 @@ export const INPUT_MALWARE_BLOCK = 'malware_block';
 export const INPUT_OVERRIDE = 'override';
 export const INPUT_CLEAN_LOGS = 'clean_logs';
 export const INPUT_ENVIRONMENT_NAME = 'environment_name';
+export const INPUT_JVM_MAX_MEMORY = 'jvm_max_memory';
 
 export const PRODUCTION_ENVIRONMENT_NAME = 'PROD';
 export const SANDBOX_ENVIRONMENT_NAME = 'TEST';
