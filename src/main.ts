@@ -26,7 +26,7 @@ async function run(): Promise<void> {
         const distribution = new JavaDistribution();
         await distribution.setup();
 
-        const result = await exec.getExecOutput(command);
+        const result = await exec.getExecOutput(command, [], { windowsVerbatimArguments: false });
 
         const clean_logs = core.getBooleanInput(INPUT_CLEAN_LOGS);
         if (clean_logs) {
@@ -44,7 +44,8 @@ async function run(): Promise<void> {
             result.stderr.includes('Error') ||
             result.stderr.includes('Exception') ||
             result.stderr.includes('Missing required option') ||
-            result.stderr.includes('Unmatched arguments from')
+            result.stderr.includes('Unmatched arguments from') ||
+            result.stderr.includes('Unmatched argument')
         ) {
             core.info('');
             core.setFailed('Something Went Wrong. Please try again.');

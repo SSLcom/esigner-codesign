@@ -1,7 +1,7 @@
 import * as core from '@actions/core';
 import * as tc from '@actions/tool-cache';
 
-import fs, { copyFileSync, mkdirSync, writeFileSync, chmodSync, readFileSync } from 'fs';
+import fs, { copyFileSync, mkdirSync, writeFileSync, chmodSync, readFileSync, existsSync } from 'fs';
 import path from 'path';
 import {
     CODESIGNTOOL_UNIX_RUN_CMD,
@@ -10,8 +10,8 @@ import {
     CODESIGNTOOL_WINDOWS_SETUP,
     PRODUCTION_ENVIRONMENT_NAME,
     INPUT_ENVIRONMENT_NAME,
-    WINDOWS,
-    INPUT_JVM_MAX_MEMORY
+    INPUT_JVM_MAX_MEMORY,
+    WINDOWS
 } from '../constants';
 import { CODESIGNTOOL_PROPERTIES, CODESIGNTOOL_DEMO_PROPERTIES } from '../config';
 
@@ -53,10 +53,9 @@ export class CodeSigner {
         process.env['CODE_SIGN_TOOL_PATH'] = archivePath;
 
         let execCmd = path.join(archivePath, cmd);
-        copyFileSync(`${workingPath}/scripts/${cmd}`, execCmd);
         const execData = readFileSync(execCmd, { encoding: 'utf-8', flag: 'r' });
-        const result = execData.replace(/@JVM_MAX_MEMORY/g, jvmMaxMemory);
-        core.debug(`Exec Cmd Content: ${result}`);
+        const result = execData.replace(/java -cp/g, `java -Xmx${jvmMaxMemory} -cp`);
+        core.info(`Exec Cmd Content: ${result}`);
         writeFileSync(execCmd, result, { encoding: 'utf-8', flag: 'w' });
         chmodSync(execCmd, '0755');
 

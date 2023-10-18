@@ -124,7 +124,7 @@ function run() {
             core.info(`CodeSigner Command: ${command}`);
             const distribution = new installer_1.JavaDistribution();
             yield distribution.setup();
-            const result = yield exec.getExecOutput(command);
+            const result = yield exec.getExecOutput(command, [], { windowsVerbatimArguments: false });
             const clean_logs = core.getBooleanInput(constants_1.INPUT_CLEAN_LOGS);
             if (clean_logs) {
                 const workingDir = path_1.default.dirname(command);
@@ -139,7 +139,8 @@ function run() {
                 result.stderr.includes('Error') ||
                 result.stderr.includes('Exception') ||
                 result.stderr.includes('Missing required option') ||
-                result.stderr.includes('Unmatched arguments from')) {
+                result.stderr.includes('Unmatched arguments from') ||
+                result.stderr.includes('Unmatched argument')) {
                 core.info('');
                 core.setFailed('Something Went Wrong. Please try again.');
                 return;
@@ -235,10 +236,9 @@ class CodeSigner {
             core.info(`Set CODE_SIGN_TOOL_PATH env variable: ${archivePath}`);
             process.env['CODE_SIGN_TOOL_PATH'] = archivePath;
             let execCmd = path_1.default.join(archivePath, cmd);
-            (0, fs_1.copyFileSync)(`${workingPath}/scripts/${cmd}`, execCmd);
             const execData = (0, fs_1.readFileSync)(execCmd, { encoding: 'utf-8', flag: 'r' });
-            const result = execData.replace(/@JVM_MAX_MEMORY/g, jvmMaxMemory);
-            core.debug(`Exec Cmd Content: ${result}`);
+            const result = execData.replace(/java -cp/g, `java -Xmx${jvmMaxMemory} -cp`);
+            core.info(`Exec Cmd Content: ${result}`);
             (0, fs_1.writeFileSync)(execCmd, result, { encoding: 'utf-8', flag: 'w' });
             (0, fs_1.chmodSync)(execCmd, '0755');
             const shellCmd = (0, util_1.userShell)();
