@@ -27,17 +27,18 @@ inputs:
   file_path:
     description: ""
     required: false
+  dir_path:
+    description: ""
+    required: false
   output_path:
     description: ""
     required: false
   malware_block:
     description: ""
     required: false
-    default: "false"
   override:
     description: ""
     required: false
-    default: "false"
   clean_logs:
     description: ""
     required: false
@@ -46,6 +47,10 @@ inputs:
     description: ""
     required: false
     default: "PROD"
+  jvm_max_memory:
+    description: ""
+    required: false
+    default: "1024M"
 runs:
   using: 'node16'
   main: 'dist/index.js'

@@ -20,6 +20,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
+    needs: ['build']
     steps:
       - uses: actions/checkout@v3
 
@@ -40,12 +41,20 @@ jobs:
           output_path: ${GITHUB_WORKSPACE}/artifacts
           malware_block: false
           environment_name: TEST
+          jvm_max_memory: 2048M
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign.ps1
+          path: ./artifacts/codesign.ps1
 
   sign-override:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
+    needs: ['build']
     steps:
       - uses: actions/checkout@v3
 
@@ -68,11 +77,18 @@ jobs:
           environment_name: TEST
           clean_logs: true
 
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign-override.ps1
+          path: ./example/codesign.ps1
+
   sign-external:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
+    needs: ['build']
     steps:
       - name: Create Input file for test signing
         shell: bash
@@ -80,7 +96,7 @@ jobs:
           mkdir -p ${GITHUB_WORKSPACE}/example
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/${{env.FILE_NAME}}
 
-      - uses: sslcom/esigner-codesign@main
+      - uses: sslcom/esigner-codesign@develop
         with:
           command: sign
           username: ${{ secrets.ES_USERNAME }}
@@ -91,3 +107,47 @@ jobs:
           output_path: ${GITHUB_WORKSPACE}/artifacts
           malware_block: false
           environment_name: TEST
+          jvm_max_memory: 2048M
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign-external.ps1
+          path: ./artifacts/codesign.ps1
+
+  batch-sign:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    needs: ['sign', 'sign-override', 'sign-external']
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create multiple Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 1!"' > ${GITHUB_WORKSPACE}/example/batch1.ps1
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 2!"' > ${GITHUB_WORKSPACE}/example/batch2.ps1
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 3!"' > ${GITHUB_WORKSPACE}/example/batch3.ps1
+          cp ./sample/minimal.exe ${GITHUB_WORKSPACE}/example/minimal.exe
+          cp ./sample/minimal.msi ${GITHUB_WORKSPACE}/example/minimal.msi
+
+      - uses: ./
+        with:
+          command: batch_sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          dir_path: ${GITHUB_WORKSPACE}/example
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+          environment_name: TEST
+          jvm_max_memory: 4096M
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: batch-sign
+          path: ./artifacts
