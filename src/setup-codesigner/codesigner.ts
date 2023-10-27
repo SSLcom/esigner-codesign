@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 
 import fs, { copyFileSync, mkdirSync, writeFileSync, chmodSync, readFileSync, existsSync } from 'fs';
@@ -11,11 +12,17 @@ import {
     PRODUCTION_ENVIRONMENT_NAME,
     INPUT_ENVIRONMENT_NAME,
     INPUT_JVM_MAX_MEMORY,
-    WINDOWS
+    WINDOWS,
+    INPUT_DIR_PATH,
+    INPUT_USERNAME,
+    INPUT_PASSWORD,
+    INPUT_CREDENTIAL_ID,
+    INPUT_PROGRAM_NAME,
+    ACTION_SCAN_CODE
 } from '../constants';
 import { CODESIGNTOOL_PROPERTIES, CODESIGNTOOL_DEMO_PROPERTIES } from '../config';
 
-import { extractZip, getPlatform, listFiles, userShell } from '../util';
+import { extractZip, getInput, getPlatform, listFiles, setCommand, userShell } from '../util';
 
 export class CodeSigner {
     constructor() {}
@@ -65,5 +72,38 @@ export class CodeSigner {
         execCmd = shellCmd + ' ' + execCmd;
         execCmd = execCmd.trimStart().trimEnd();
         return execCmd;
+    }
+
+    public async scanCode(execCommand: string, action: string): Promise<boolean> {
+        let command = `${ACTION_SCAN_CODE}`;
+        command = setCommand(INPUT_USERNAME, command, action);
+        command = setCommand(INPUT_PASSWORD, command, action);
+        command = setCommand(INPUT_CREDENTIAL_ID, command, action);
+        command = setCommand(INPUT_PROGRAM_NAME, command, action);
+
+        let input_path = path.normalize(getInput(INPUT_DIR_PATH));
+        const files = fs.readdirSync(input_path);
+        for (const file of files) {
+            let fullPath = path.join(input_path, file);
+            let scan_code = `${command} -input_file_path=${fullPath}`;
+            scan_code = `${execCommand} ${scan_code}`;
+            core.info(`CodeSigner scan code command: ${scan_code}`);
+            const result = await exec.getExecOutput(scan_code, [], { windowsVerbatimArguments: false });
+            if (
+                result.stdout.includes('Error') ||
+                result.stdout.includes('Exception') ||
+                result.stdout.includes('Missing required option') ||
+                result.stdout.includes('Unmatched arguments from') ||
+                result.stderr.includes('Error') ||
+                result.stderr.includes('Exception') ||
+                result.stderr.includes('Missing required option') ||
+                result.stderr.includes('Unmatched arguments from') ||
+                result.stderr.includes('Unmatched argument')
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

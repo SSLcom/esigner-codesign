@@ -13,10 +13,12 @@ export const CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
 
 export const ACTION_SIGN = 'sign';
 export const ACTION_BATCH_SIGN = 'batch_sign';
+export const ACTION_SCAN_CODE = 'scan_code';
 
 export const SUPPORT_COMMANDS = new Map<string, string[]>([
     ['sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'file_path', 'output_path', 'malware_block', 'override']],
-    ['batch_sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'dir_path', 'output_path']]
+    ['batch_sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'dir_path', 'output_path']],
+    ['scan_code', ['username', 'password', 'credential_id', 'program_name']]
 ]);
 
 export const INPUT_COMMAND = 'command';

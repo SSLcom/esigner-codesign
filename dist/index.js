@@ -26,7 +26,7 @@ exports.CODESIGNTOOL_DEMO_PROPERTIES = 'CLIENT_ID=qOUeZCCzSqgA93acB3LYq6lBNjgZdi
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_JVM_MAX_MEMORY = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.SUPPORT_COMMANDS = exports.ACTION_BATCH_SIGN = exports.ACTION_SIGN = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
+exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_JVM_MAX_MEMORY = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.SUPPORT_COMMANDS = exports.ACTION_SCAN_CODE = exports.ACTION_BATCH_SIGN = exports.ACTION_SIGN = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
 exports.MACOS_JAVA_CONTENT_POSTFIX = 'Contents/Home';
 exports.UNIX = 'UNIX';
 exports.MACOS = 'MACOS';
@@ -38,9 +38,11 @@ exports.CODESIGNTOOL_WINDOWS_RUN_CMD = 'CodeSignTool.bat';
 exports.CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
 exports.ACTION_SIGN = 'sign';
 exports.ACTION_BATCH_SIGN = 'batch_sign';
+exports.ACTION_SCAN_CODE = 'scan_code';
 exports.SUPPORT_COMMANDS = new Map([
     ['sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'file_path', 'output_path', 'malware_block', 'override']],
-    ['batch_sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'dir_path', 'output_path']]
+    ['batch_sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'dir_path', 'output_path']],
+    ['scan_code', ['username', 'password', 'credential_id', 'program_name']]
 ]);
 exports.INPUT_COMMAND = 'command';
 exports.INPUT_USERNAME = 'username';
@@ -116,7 +118,8 @@ function run() {
         try {
             core.debug('Run CodeSigner');
             core.debug('Running ESigner.com CodeSign Action ====>');
-            let command = (0, util_1.inputCommands)();
+            let action = `${core.getInput(constants_1.INPUT_COMMAND)}`;
+            let command = (0, util_1.inputCommands)(action);
             core.info(`Input Commands: ${command}`);
             const codesigner = new codesigner_1.CodeSigner();
             const execCommand = yield codesigner.setup();
@@ -124,6 +127,16 @@ function run() {
             core.info(`CodeSigner Command: ${command}`);
             const distribution = new installer_1.JavaDistribution();
             yield distribution.setup();
+            let malware_scan = `${core.getInput(constants_1.INPUT_MALWARE_BLOCK, { required: false })}`;
+            core.info(`Malware scan is: ${malware_scan.toUpperCase() == 'TRUE' ? 'enabled' : 'disabled'}`);
+            if (action == constants_1.ACTION_BATCH_SIGN && malware_scan.toUpperCase() == 'TRUE') {
+                const scan_result = yield codesigner.scanCode(execCommand, action);
+                if (!scan_result) {
+                    core.info('');
+                    core.setFailed('Something Went Wrong. Please try again.');
+                    return;
+                }
+            }
             const result = yield exec.getExecOutput(command, [], { windowsVerbatimArguments: false });
             const clean_logs = core.getBooleanInput(constants_1.INPUT_CLEAN_LOGS);
             if (clean_logs) {
@@ -201,6 +214,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CodeSigner = void 0;
 const core = __importStar(__nccwpck_require__(2186));
+const exec = __importStar(__nccwpck_require__(1514));
 const tc = __importStar(__nccwpck_require__(7784));
 const fs_1 = __importStar(__nccwpck_require__(7147));
 const path_1 = __importDefault(__nccwpck_require__(1017));
@@ -247,6 +261,36 @@ class CodeSigner {
             execCmd = shellCmd + ' ' + execCmd;
             execCmd = execCmd.trimStart().trimEnd();
             return execCmd;
+        });
+    }
+    scanCode(execCommand, action) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let command = `${constants_1.ACTION_SCAN_CODE}`;
+            command = (0, util_1.setCommand)(constants_1.INPUT_USERNAME, command, action);
+            command = (0, util_1.setCommand)(constants_1.INPUT_PASSWORD, command, action);
+            command = (0, util_1.setCommand)(constants_1.INPUT_CREDENTIAL_ID, command, action);
+            command = (0, util_1.setCommand)(constants_1.INPUT_PROGRAM_NAME, command, action);
+            let input_path = path_1.default.normalize((0, util_1.getInput)(constants_1.INPUT_DIR_PATH));
+            const files = fs_1.default.readdirSync(input_path);
+            for (const file of files) {
+                let fullPath = path_1.default.join(input_path, file);
+                let scan_code = `${command} -input_file_path=${fullPath}`;
+                scan_code = `${execCommand} ${scan_code}`;
+                core.info(`CodeSigner scan code command: ${scan_code}`);
+                const result = yield exec.getExecOutput(scan_code, [], { windowsVerbatimArguments: false });
+                if (result.stdout.includes('Error') ||
+                    result.stdout.includes('Exception') ||
+                    result.stdout.includes('Missing required option') ||
+                    result.stdout.includes('Unmatched arguments from') ||
+                    result.stderr.includes('Error') ||
+                    result.stderr.includes('Exception') ||
+                    result.stderr.includes('Missing required option') ||
+                    result.stderr.includes('Unmatched arguments from') ||
+                    result.stderr.includes('Unmatched argument')) {
+                    return false;
+                }
+            }
+            return true;
         });
     }
 }
@@ -641,7 +685,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.userShell = exports.replaceEnv = exports.setCommand = exports.inputCommands = exports.listFiles = exports.getPlatform = exports.getToolCachePath = exports.isVersionSatisfies = exports.getDownloadArchiveExtension = exports.extractZip = exports.extractJdkFile = exports.getTempDir = void 0;
+exports.userShell = exports.replaceEnv = exports.setCommand = exports.getInput = exports.inputCommands = exports.listFiles = exports.getPlatform = exports.getToolCachePath = exports.isVersionSatisfies = exports.getDownloadArchiveExtension = exports.extractZip = exports.extractJdkFile = exports.getTempDir = void 0;
 const os_1 = __importStar(__nccwpck_require__(2037));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const fs = __importStar(__nccwpck_require__(7147));
@@ -722,8 +766,7 @@ function listFiles(path) {
     });
 }
 exports.listFiles = listFiles;
-function inputCommands() {
-    let action = `${core.getInput(constants_1.INPUT_COMMAND)}`;
+function inputCommands(action) {
     let command = `${core.getInput(constants_1.INPUT_COMMAND)}`;
     command = setCommand(constants_1.INPUT_USERNAME, command, action);
     command = setCommand(constants_1.INPUT_PASSWORD, command, action);
@@ -738,8 +781,12 @@ function inputCommands() {
     return command;
 }
 exports.inputCommands = inputCommands;
+function getInput(inputKey) {
+    return replaceEnv(core.getInput(inputKey));
+}
+exports.getInput = getInput;
 function setCommand(inputKey, command, action) {
-    let input = replaceEnv(core.getInput(inputKey));
+    let input = getInput(inputKey);
     if (input == '') {
         return command;
     }
