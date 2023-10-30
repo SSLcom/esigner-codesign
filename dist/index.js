@@ -26,12 +26,13 @@ exports.CODESIGNTOOL_DEMO_PROPERTIES = 'CLIENT_ID=qOUeZCCzSqgA93acB3LYq6lBNjgZdi
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_JVM_MAX_MEMORY = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.SUPPORT_COMMANDS = exports.ACTION_SCAN_CODE = exports.ACTION_BATCH_SIGN = exports.ACTION_SIGN = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
+exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_JVM_MAX_MEMORY = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.SUPPORT_COMMANDS = exports.ACTION_SCAN_CODE = exports.ACTION_BATCH_SIGN = exports.ACTION_SIGN = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_BASEPATH = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
 exports.MACOS_JAVA_CONTENT_POSTFIX = 'Contents/Home';
 exports.UNIX = 'UNIX';
 exports.MACOS = 'MACOS';
 exports.WINDOWS = 'WINDOWS';
 exports.CODESIGNTOOL_VERSION = 'v1.2.7';
+exports.CODESIGNTOOL_BASEPATH = `CodeSignTool-${exports.CODESIGNTOOL_VERSION}`;
 exports.CODESIGNTOOL_WINDOWS_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${exports.CODESIGNTOOL_VERSION}/CodeSignTool-${exports.CODESIGNTOOL_VERSION}-windows.zip`;
 exports.CODESIGNTOOL_UNIX_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${exports.CODESIGNTOOL_VERSION}/CodeSignTool-${exports.CODESIGNTOOL_VERSION}.zip`;
 exports.CODESIGNTOOL_WINDOWS_RUN_CMD = 'CodeSignTool.bat';
@@ -233,13 +234,19 @@ class CodeSigner {
             core.info(`Downloading CodeSignTool from ${link}`);
             const codesigner = path_1.default.resolve(process.cwd(), 'codesign');
             core.info(`Creating CodeSignTool extract path ${codesigner}`);
-            (0, fs_1.mkdirSync)(codesigner);
-            const downloadedFile = yield tc.downloadTool(link);
-            const extractedCodeSignPath = yield (0, util_1.extractZip)(downloadedFile, codesigner);
-            core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
-            const archiveName = fs_1.default.readdirSync(extractedCodeSignPath)[0];
-            const archivePath = path_1.default.join(extractedCodeSignPath, archiveName);
-            core.info(`Archive name: ${archiveName}, ${archivePath}`);
+            if (!(0, fs_1.existsSync)(codesigner)) {
+                (0, fs_1.mkdirSync)(codesigner);
+                core.info(`Created CodeSignTool extract path ${codesigner}`);
+            }
+            let archivePath = path_1.default.join(codesigner, constants_1.CODESIGNTOOL_BASEPATH);
+            if (!(0, fs_1.existsSync)(archivePath)) {
+                const downloadedFile = yield tc.downloadTool(link);
+                yield (0, util_1.extractZip)(downloadedFile, codesigner);
+                core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
+                const archiveName = fs_1.default.readdirSync(codesigner)[0];
+                archivePath = path_1.default.join(codesigner, archiveName);
+            }
+            core.info(`Archive name: ${constants_1.CODESIGNTOOL_BASEPATH}, ${archivePath}`);
             (0, util_1.listFiles)(archivePath);
             const environment = (_a = core.getInput(constants_1.INPUT_ENVIRONMENT_NAME)) !== null && _a !== void 0 ? _a : constants_1.PRODUCTION_ENVIRONMENT_NAME;
             const jvmMaxMemory = (_b = core.getInput(constants_1.INPUT_JVM_MAX_MEMORY)) !== null && _b !== void 0 ? _b : '2048M';

@@ -18,7 +18,8 @@ import {
     INPUT_PASSWORD,
     INPUT_CREDENTIAL_ID,
     INPUT_PROGRAM_NAME,
-    ACTION_SCAN_CODE
+    ACTION_SCAN_CODE,
+    CODESIGNTOOL_BASEPATH
 } from '../constants';
 import { CODESIGNTOOL_PROPERTIES, CODESIGNTOOL_DEMO_PROPERTIES } from '../config';
 
@@ -37,15 +38,22 @@ export class CodeSigner {
 
         const codesigner = path.resolve(process.cwd(), 'codesign');
         core.info(`Creating CodeSignTool extract path ${codesigner}`);
-        mkdirSync(codesigner);
+        if (!existsSync(codesigner)) {
+            mkdirSync(codesigner);
+            core.info(`Created CodeSignTool extract path ${codesigner}`);
+        }
 
-        const downloadedFile = await tc.downloadTool(link);
-        const extractedCodeSignPath = await extractZip(downloadedFile, codesigner);
-        core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
+        let archivePath = path.join(codesigner, CODESIGNTOOL_BASEPATH);
+        if (!existsSync(archivePath)) {
+            const downloadedFile = await tc.downloadTool(link);
+            await extractZip(downloadedFile, codesigner);
+            core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
 
-        const archiveName = fs.readdirSync(extractedCodeSignPath)[0];
-        const archivePath = path.join(extractedCodeSignPath, archiveName);
-        core.info(`Archive name: ${archiveName}, ${archivePath}`);
+            const archiveName = fs.readdirSync(codesigner)[0];
+            archivePath = path.join(codesigner, archiveName);
+        }
+
+        core.info(`Archive name: ${CODESIGNTOOL_BASEPATH}, ${archivePath}`);
         listFiles(archivePath);
 
         const environment = core.getInput(INPUT_ENVIRONMENT_NAME) ?? PRODUCTION_ENVIRONMENT_NAME;

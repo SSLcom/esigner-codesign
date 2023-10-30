@@ -115,6 +115,60 @@ jobs:
           name: sign-external.ps1
           path: ./artifacts/codesign.ps1
 
+  sign-multi-same-job:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    needs: ['build']
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign1.ps1
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign2.ps1
+
+      - uses: ./
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${GITHUB_WORKSPACE}/example/codesign1.ps1
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+          malware_block: false
+          environment_name: TEST
+          jvm_max_memory: 2048M
+
+      - uses: ./
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${GITHUB_WORKSPACE}/example/codesign2.ps1
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+          malware_block: false
+          environment_name: TEST
+          jvm_max_memory: 2048M
+
+      - name: Upload Signed Files (1)
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign.ps1
+          path: ./artifacts/codesign1.ps1
+
+      - name: Upload Signed Files (2)
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign.ps1
+          path: ./artifacts/codesign2.ps1
+
   batch-sign:
     strategy:
       matrix:
