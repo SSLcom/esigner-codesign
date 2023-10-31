@@ -231,15 +231,14 @@ class CodeSigner {
             (0, util_1.listFiles)(workingPath);
             let link = (0, util_1.getPlatform)() == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_SETUP : constants_1.CODESIGNTOOL_UNIX_SETUP;
             let cmd = (0, util_1.getPlatform)() == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_RUN_CMD : constants_1.CODESIGNTOOL_UNIX_RUN_CMD;
-            core.info(`Downloading CodeSignTool from ${link}`);
             const codesigner = path_1.default.resolve(process.cwd(), 'codesign');
-            core.info(`Creating CodeSignTool extract path ${codesigner}`);
             if (!(0, fs_1.existsSync)(codesigner)) {
                 (0, fs_1.mkdirSync)(codesigner);
-                core.info(`Created CodeSignTool extract path ${codesigner}`);
+                core.info(`Created CodeSignTool base path ${codesigner}`);
             }
             let archivePath = path_1.default.join(codesigner, constants_1.CODESIGNTOOL_BASEPATH);
             if (!(0, fs_1.existsSync)(archivePath)) {
+                core.info(`Downloading CodeSignTool from ${link}`);
                 const downloadedFile = yield tc.downloadTool(link);
                 yield (0, util_1.extractZip)(downloadedFile, codesigner);
                 core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);

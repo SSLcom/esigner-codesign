@@ -34,17 +34,16 @@ export class CodeSigner {
 
         let link = getPlatform() == WINDOWS ? CODESIGNTOOL_WINDOWS_SETUP : CODESIGNTOOL_UNIX_SETUP;
         let cmd = getPlatform() == WINDOWS ? CODESIGNTOOL_WINDOWS_RUN_CMD : CODESIGNTOOL_UNIX_RUN_CMD;
-        core.info(`Downloading CodeSignTool from ${link}`);
 
         const codesigner = path.resolve(process.cwd(), 'codesign');
-        core.info(`Creating CodeSignTool extract path ${codesigner}`);
         if (!existsSync(codesigner)) {
             mkdirSync(codesigner);
-            core.info(`Created CodeSignTool extract path ${codesigner}`);
+            core.info(`Created CodeSignTool base path ${codesigner}`);
         }
 
         let archivePath = path.join(codesigner, CODESIGNTOOL_BASEPATH);
         if (!existsSync(archivePath)) {
+            core.info(`Downloading CodeSignTool from ${link}`);
             const downloadedFile = await tc.downloadTool(link);
             await extractZip(downloadedFile, codesigner);
             core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
