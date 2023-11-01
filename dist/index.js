@@ -115,6 +115,7 @@ const codesigner_1 = __nccwpck_require__(6598);
 const installer_1 = __nccwpck_require__(2507);
 const util_1 = __nccwpck_require__(4024);
 function run() {
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug('Run CodeSigner');
@@ -126,8 +127,17 @@ function run() {
             const execCommand = yield codesigner.setup();
             command = `${execCommand} ${command}`;
             core.info(`CodeSigner Command: ${command}`);
-            const distribution = new installer_1.JavaDistribution();
-            yield distribution.setup();
+            const javaVersion = parseInt((_a = process.env['JAVA_VERSION']) !== null && _a !== void 0 ? _a : '0');
+            const javaHome = (_b = process.env['JAVA_HOME']) !== null && _b !== void 0 ? _b : '';
+            core.info(`JDK home: ${javaHome}`);
+            core.info(`JDK version: ${javaVersion}`);
+            if (javaVersion < 11) {
+                const distribution = new installer_1.JavaDistribution();
+                yield distribution.setup();
+            }
+            else {
+                core.info(`JDK is already installed ${javaHome}`);
+            }
             let malware_scan = `${core.getInput(constants_1.INPUT_MALWARE_BLOCK, { required: false })}`;
             core.info(`Malware scan is: ${malware_scan.toUpperCase() == 'TRUE' ? 'enabled' : 'disabled'}`);
             if (action == constants_1.ACTION_BATCH_SIGN && malware_scan.toUpperCase() == 'TRUE') {
@@ -225,7 +235,7 @@ const util_1 = __nccwpck_require__(4024);
 class CodeSigner {
     constructor() { }
     setup() {
-        var _a, _b;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             const workingPath = path_1.default.resolve(process.cwd());
             (0, util_1.listFiles)(workingPath);
@@ -236,7 +246,7 @@ class CodeSigner {
                 (0, fs_1.mkdirSync)(codesigner);
                 core.info(`Created CodeSignTool base path ${codesigner}`);
             }
-            let archivePath = path_1.default.join(codesigner, constants_1.CODESIGNTOOL_BASEPATH);
+            let archivePath = (_a = process.env['CODESIGNTOOL_PATH']) !== null && _a !== void 0 ? _a : path_1.default.join(codesigner, constants_1.CODESIGNTOOL_BASEPATH);
             if (!(0, fs_1.existsSync)(archivePath)) {
                 core.info(`Downloading CodeSignTool from ${link}`);
                 const downloadedFile = yield tc.downloadTool(link);
@@ -244,11 +254,12 @@ class CodeSigner {
                 core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
                 const archiveName = fs_1.default.readdirSync(codesigner)[0];
                 archivePath = path_1.default.join(codesigner, archiveName);
+                core.exportVariable(`CODESIGNTOOL_PATH`, archivePath);
             }
             core.info(`Archive name: ${constants_1.CODESIGNTOOL_BASEPATH}, ${archivePath}`);
             (0, util_1.listFiles)(archivePath);
-            const environment = (_a = core.getInput(constants_1.INPUT_ENVIRONMENT_NAME)) !== null && _a !== void 0 ? _a : constants_1.PRODUCTION_ENVIRONMENT_NAME;
-            const jvmMaxMemory = (_b = core.getInput(constants_1.INPUT_JVM_MAX_MEMORY)) !== null && _b !== void 0 ? _b : '2048M';
+            const environment = (_b = core.getInput(constants_1.INPUT_ENVIRONMENT_NAME)) !== null && _b !== void 0 ? _b : constants_1.PRODUCTION_ENVIRONMENT_NAME;
+            const jvmMaxMemory = (_c = core.getInput(constants_1.INPUT_JVM_MAX_MEMORY)) !== null && _c !== void 0 ? _c : '2048M';
             const sourceConfig = environment == constants_1.PRODUCTION_ENVIRONMENT_NAME ? config_1.CODESIGNTOOL_PROPERTIES : config_1.CODESIGNTOOL_DEMO_PROPERTIES;
             const destConfig = path_1.default.join(archivePath, 'conf/code_sign_tool.properties');
             core.info(`Write CodeSignTool config file ${sourceConfig} to ${destConfig}`);
@@ -462,6 +473,7 @@ class JavaBase {
         core.setOutput('path', toolPath);
         core.setOutput('version', version);
         core.exportVariable(`JAVA_HOME_${majorVersion}_${this.architecture.toUpperCase()}`, toolPath);
+        core.exportVariable(`JAVA_VERSION`, majorVersion);
     }
     distributionArchitecture() {
         switch (this.architecture) {

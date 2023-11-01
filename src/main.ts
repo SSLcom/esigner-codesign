@@ -24,8 +24,16 @@ async function run(): Promise<void> {
         command = `${execCommand} ${command}`;
         core.info(`CodeSigner Command: ${command}`);
 
-        const distribution = new JavaDistribution();
-        await distribution.setup();
+        const javaVersion = parseInt(process.env['JAVA_VERSION'] ?? '0');
+        const javaHome = process.env['JAVA_HOME'] ?? '';
+        core.info(`JDK home: ${javaHome}`);
+        core.info(`JDK version: ${javaVersion}`);
+        if (javaVersion < 11) {
+            const distribution = new JavaDistribution();
+            await distribution.setup();
+        } else {
+            core.info(`JDK is already installed ${javaHome}`);
+        }
 
         let malware_scan = `${core.getInput(INPUT_MALWARE_BLOCK, { required: false })}`;
         core.info(`Malware scan is: ${malware_scan.toUpperCase() == 'TRUE' ? 'enabled' : 'disabled'}`);

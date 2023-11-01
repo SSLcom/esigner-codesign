@@ -41,7 +41,7 @@ export class CodeSigner {
             core.info(`Created CodeSignTool base path ${codesigner}`);
         }
 
-        let archivePath = path.join(codesigner, CODESIGNTOOL_BASEPATH);
+        let archivePath = process.env['CODESIGNTOOL_PATH'] ?? path.join(codesigner, CODESIGNTOOL_BASEPATH);
         if (!existsSync(archivePath)) {
             core.info(`Downloading CodeSignTool from ${link}`);
             const downloadedFile = await tc.downloadTool(link);
@@ -50,6 +50,7 @@ export class CodeSigner {
 
             const archiveName = fs.readdirSync(codesigner)[0];
             archivePath = path.join(codesigner, archiveName);
+            core.exportVariable(`CODESIGNTOOL_PATH`, archivePath);
         }
 
         core.info(`Archive name: ${CODESIGNTOOL_BASEPATH}, ${archivePath}`);
