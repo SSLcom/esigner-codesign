@@ -92,8 +92,7 @@ export function listFiles(path: string): void {
     });
 }
 
-export function inputCommands(): string {
-    let action = `${core.getInput(INPUT_COMMAND)}`;
+export function inputCommands(action: string): string {
     let command = `${core.getInput(INPUT_COMMAND)}`;
     command = setCommand(INPUT_USERNAME, command, action);
     command = setCommand(INPUT_PASSWORD, command, action);
@@ -108,8 +107,12 @@ export function inputCommands(): string {
     return command;
 }
 
+export function getInput(inputKey: string) {
+    return replaceEnv(core.getInput(inputKey));
+}
+
 export function setCommand(inputKey: string, command: string, action: string): string {
-    let input = replaceEnv(core.getInput(inputKey));
+    let input = getInput(inputKey);
     if (input == '') {
         return command;
     }

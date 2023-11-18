@@ -1,4 +1,5 @@
 import * as core from '@actions/core';
+import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 
 import fs, { copyFileSync, mkdirSync, writeFileSync, chmodSync, readFileSync, existsSync } from 'fs';
@@ -11,11 +12,18 @@ import {
     PRODUCTION_ENVIRONMENT_NAME,
     INPUT_ENVIRONMENT_NAME,
     INPUT_JVM_MAX_MEMORY,
-    WINDOWS
+    WINDOWS,
+    INPUT_DIR_PATH,
+    INPUT_USERNAME,
+    INPUT_PASSWORD,
+    INPUT_CREDENTIAL_ID,
+    INPUT_PROGRAM_NAME,
+    ACTION_SCAN_CODE,
+    CODESIGNTOOL_BASEPATH
 } from '../constants';
 import { CODESIGNTOOL_PROPERTIES, CODESIGNTOOL_DEMO_PROPERTIES } from '../config';
 
-import { extractZip, getPlatform, listFiles, userShell } from '../util';
+import { extractZip, getInput, getPlatform, listFiles, setCommand, userShell } from '../util';
 
 export class CodeSigner {
     constructor() {}
@@ -26,19 +34,26 @@ export class CodeSigner {
 
         let link = getPlatform() == WINDOWS ? CODESIGNTOOL_WINDOWS_SETUP : CODESIGNTOOL_UNIX_SETUP;
         let cmd = getPlatform() == WINDOWS ? CODESIGNTOOL_WINDOWS_RUN_CMD : CODESIGNTOOL_UNIX_RUN_CMD;
-        core.info(`Downloading CodeSignTool from ${link}`);
 
         const codesigner = path.resolve(process.cwd(), 'codesign');
-        core.info(`Creating CodeSignTool extract path ${codesigner}`);
-        mkdirSync(codesigner);
+        if (!existsSync(codesigner)) {
+            mkdirSync(codesigner);
+            core.info(`Created CodeSignTool base path ${codesigner}`);
+        }
 
-        const downloadedFile = await tc.downloadTool(link);
-        const extractedCodeSignPath = await extractZip(downloadedFile, codesigner);
-        core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
+        let archivePath = process.env['CODESIGNTOOL_PATH'] ?? path.join(codesigner, CODESIGNTOOL_BASEPATH);
+        if (!existsSync(archivePath)) {
+            core.info(`Downloading CodeSignTool from ${link}`);
+            const downloadedFile = await tc.downloadTool(link);
+            await extractZip(downloadedFile, codesigner);
+            core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
 
-        const archiveName = fs.readdirSync(extractedCodeSignPath)[0];
-        const archivePath = path.join(extractedCodeSignPath, archiveName);
-        core.info(`Archive name: ${archiveName}, ${archivePath}`);
+            const archiveName = fs.readdirSync(codesigner)[0];
+            archivePath = path.join(codesigner, archiveName);
+            core.exportVariable(`CODESIGNTOOL_PATH`, archivePath);
+        }
+
+        core.info(`Archive name: ${CODESIGNTOOL_BASEPATH}, ${archivePath}`);
         listFiles(archivePath);
 
         const environment = core.getInput(INPUT_ENVIRONMENT_NAME) ?? PRODUCTION_ENVIRONMENT_NAME;
@@ -65,5 +80,38 @@ export class CodeSigner {
         execCmd = shellCmd + ' ' + execCmd;
         execCmd = execCmd.trimStart().trimEnd();
         return execCmd;
+    }
+
+    public async scanCode(execCommand: string, action: string): Promise<boolean> {
+        let command = `${ACTION_SCAN_CODE}`;
+        command = setCommand(INPUT_USERNAME, command, action);
+        command = setCommand(INPUT_PASSWORD, command, action);
+        command = setCommand(INPUT_CREDENTIAL_ID, command, action);
+        command = setCommand(INPUT_PROGRAM_NAME, command, action);
+
+        let input_path = path.normalize(getInput(INPUT_DIR_PATH));
+        const files = fs.readdirSync(input_path);
+        for (const file of files) {
+            let fullPath = path.join(input_path, file);
+            let scan_code = `${command} -input_file_path=${fullPath}`;
+            scan_code = `${execCommand} ${scan_code}`;
+            core.info(`CodeSigner scan code command: ${scan_code}`);
+            const result = await exec.getExecOutput(scan_code, [], { windowsVerbatimArguments: false });
+            if (
+                result.stdout.includes('Error') ||
+                result.stdout.includes('Exception') ||
+                result.stdout.includes('Missing required option') ||
+                result.stdout.includes('Unmatched arguments from') ||
+                result.stderr.includes('Error') ||
+                result.stderr.includes('Exception') ||
+                result.stderr.includes('Missing required option') ||
+                result.stderr.includes('Unmatched arguments from') ||
+                result.stderr.includes('Unmatched argument')
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

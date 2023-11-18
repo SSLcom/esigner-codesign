@@ -4,6 +4,7 @@ export const UNIX = 'UNIX';
 export const MACOS = 'MACOS';
 export const WINDOWS = 'WINDOWS';
 export const CODESIGNTOOL_VERSION = 'v1.2.7';
+export const CODESIGNTOOL_BASEPATH = `CodeSignTool-${CODESIGNTOOL_VERSION}`;
 
 export const CODESIGNTOOL_WINDOWS_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${CODESIGNTOOL_VERSION}/CodeSignTool-${CODESIGNTOOL_VERSION}-windows.zip`;
 export const CODESIGNTOOL_UNIX_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${CODESIGNTOOL_VERSION}/CodeSignTool-${CODESIGNTOOL_VERSION}.zip`;
@@ -13,10 +14,12 @@ export const CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
 
 export const ACTION_SIGN = 'sign';
 export const ACTION_BATCH_SIGN = 'batch_sign';
+export const ACTION_SCAN_CODE = 'scan_code';
 
 export const SUPPORT_COMMANDS = new Map<string, string[]>([
     ['sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'file_path', 'output_path', 'malware_block', 'override']],
-    ['batch_sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'dir_path', 'output_path']]
+    ['batch_sign', ['username', 'password', 'credential_id', 'totp_secret', 'program_name', 'dir_path', 'output_path']],
+    ['scan_code', ['username', 'password', 'credential_id', 'program_name']]
 ]);
 
 export const INPUT_COMMAND = 'command';

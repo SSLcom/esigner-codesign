@@ -3,7 +3,7 @@ import * as exec from '@actions/exec';
 
 import fs from 'fs';
 import path from 'path';
-import { INPUT_CLEAN_LOGS } from './constants';
+import { ACTION_BATCH_SIGN, INPUT_CLEAN_LOGS, INPUT_COMMAND, INPUT_MALWARE_BLOCK } from './constants';
 
 import { CodeSigner } from './setup-codesigner/codesigner';
 import { JavaDistribution } from './setup-jdk/installer';
@@ -14,7 +14,8 @@ async function run(): Promise<void> {
         core.debug('Run CodeSigner');
         core.debug('Running ESigner.com CodeSign Action ====>');
 
-        let command = inputCommands();
+        let action = `${core.getInput(INPUT_COMMAND)}`;
+        let command = inputCommands(action);
         core.info(`Input Commands: ${command}`);
 
         const codesigner = new CodeSigner();
@@ -23,8 +24,27 @@ async function run(): Promise<void> {
         command = `${execCommand} ${command}`;
         core.info(`CodeSigner Command: ${command}`);
 
-        const distribution = new JavaDistribution();
-        await distribution.setup();
+        const javaVersion = parseInt(process.env['JAVA_VERSION'] ?? '0');
+        const javaHome = process.env['JAVA_HOME'] ?? '';
+        core.info(`JDK home: ${javaHome}`);
+        core.info(`JDK version: ${javaVersion}`);
+        if (javaVersion < 11) {
+            const distribution = new JavaDistribution();
+            await distribution.setup();
+        } else {
+            core.info(`JDK is already installed ${javaHome}`);
+        }
+
+        let malware_scan = `${core.getInput(INPUT_MALWARE_BLOCK, { required: false })}`;
+        core.info(`Malware scan is: ${malware_scan.toUpperCase() == 'TRUE' ? 'enabled' : 'disabled'}`);
+        if (action == ACTION_BATCH_SIGN && malware_scan.toUpperCase() == 'TRUE') {
+            const scan_result = await codesigner.scanCode(execCommand, action);
+            if (!scan_result) {
+                core.info('');
+                core.setFailed('Something Went Wrong. Please try again.');
+                return;
+            }
+        }
 
         const result = await exec.getExecOutput(command, [], { windowsVerbatimArguments: false });
 

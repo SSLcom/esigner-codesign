@@ -39,6 +39,7 @@
     output_path: ${GITHUB_WORKSPACE}/artifacts
 
     # Scans your file for any possible malware in order to avoid code compromise and prevents signing of code if malware is detected.
+    # On batch_sign command: If you are getting 'Error: hash needs to be scanned first before submitting for signing: <hash_value>', you can set this value to true
     malware_block: false
     
     # Overrides the input file after signing, if this parameter is set and no -output_dir_path parameter
