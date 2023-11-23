@@ -268,7 +268,7 @@ class CodeSigner {
             process.env['CODE_SIGN_TOOL_PATH'] = archivePath;
             let execCmd = path_1.default.join(archivePath, cmd);
             const execData = (0, fs_1.readFileSync)(execCmd, { encoding: 'utf-8', flag: 'r' });
-            const result = execData.replace(/java -cp/g, `java -Xmx${jvmMaxMemory} -cp`);
+            const result = execData.replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`).replace(/\$@/g, `"\$@"`);
             core.info(`Exec Cmd Content: ${result}`);
             (0, fs_1.writeFileSync)(execCmd, result, { encoding: 'utf-8', flag: 'w' });
             (0, fs_1.chmodSync)(execCmd, '0755');
@@ -829,11 +829,11 @@ function setCommand(inputKey, command, action) {
     }
     else if (inputKey == constants_1.INPUT_FILE_PATH) {
         input = path_1.default.normalize(input);
-        command = `${command} -input_file_path=${input}`;
+        command = `${command} -input_file_path="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_DIR_PATH) {
         input = path_1.default.normalize(input);
-        command = `${command} -input_dir_path=${input}`;
+        command = `${command} -input_dir_path="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_OUTPUT_PATH) {
         input = path_1.default.normalize(input);

@@ -49,6 +49,40 @@ jobs:
           name: sign.ps1
           path: ./artifacts/codesign.ps1
 
+  sign-input-space:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    needs: ['build']
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          cp "./sample/sample file.exe" "${GITHUB_WORKSPACE}/example/sample file.exe"
+
+      - uses: ./
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${GITHUB_WORKSPACE}/example/sample file.exe
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+          malware_block: false
+          environment_name: TEST
+          jvm_max_memory: 2048M
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign-space.exe
+          path: ./artifacts/sample file.exe
+
   sign-override:
     strategy:
       matrix:

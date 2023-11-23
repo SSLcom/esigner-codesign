@@ -69,7 +69,7 @@ export class CodeSigner {
 
         let execCmd = path.join(archivePath, cmd);
         const execData = readFileSync(execCmd, { encoding: 'utf-8', flag: 'r' });
-        const result = execData.replace(/java -cp/g, `java -Xmx${jvmMaxMemory} -cp`);
+        const result = execData.replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`).replace(/\$@/g, `"\$@"`);
         core.info(`Exec Cmd Content: ${result}`);
         writeFileSync(execCmd, result, { encoding: 'utf-8', flag: 'w' });
         chmodSync(execCmd, '0755');

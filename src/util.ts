@@ -133,10 +133,10 @@ export function setCommand(inputKey: string, command: string, action: string): s
         command = `${command} -program_name=${input}`;
     } else if (inputKey == INPUT_FILE_PATH) {
         input = path.normalize(input);
-        command = `${command} -input_file_path=${input}`;
+        command = `${command} -input_file_path="${input}"`;
     } else if (inputKey == INPUT_DIR_PATH) {
         input = path.normalize(input);
-        command = `${command} -input_dir_path=${input}`;
+        command = `${command} -input_dir_path="${input}"`;
     } else if (inputKey == INPUT_OUTPUT_PATH) {
         input = path.normalize(input);
         if (fs.existsSync(input)) {
