@@ -163,7 +163,7 @@ export function replaceEnv(input: string): string {
     return input;
 }
 
-export function userShell(): string {
+export function userShell(): string | null {
     const { env } = process;
 
     const platform = getPlatform();
