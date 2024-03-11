@@ -252,7 +252,7 @@ class CodeSigner {
             if (!(0, fs_1.existsSync)(archivePath)) {
                 core.info(`Downloading CodeSignTool from ${link}`);
                 const downloadedFile = yield tc.downloadTool(link);
-                yield (0, util_1.extractZip)(downloadedFile, codesigner);
+                yield (0, util_1.extractZip)(downloadedFile, path_1.default.join(codesigner, constants_1.CODESIGNTOOL_BASEPATH));
                 core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
                 const archiveName = fs_1.default.readdirSync(codesigner)[0];
                 archivePath = path_1.default.join(codesigner, archiveName);

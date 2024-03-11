@@ -45,7 +45,7 @@ export class CodeSigner {
         if (!existsSync(archivePath)) {
             core.info(`Downloading CodeSignTool from ${link}`);
             const downloadedFile = await tc.downloadTool(link);
-            await extractZip(downloadedFile, codesigner);
+            await extractZip(downloadedFile, path.join(codesigner, CODESIGNTOOL_BASEPATH));
             core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
 
             const archiveName = fs.readdirSync(codesigner)[0];
