@@ -3,7 +3,7 @@ export const MACOS_JAVA_CONTENT_POSTFIX = 'Contents/Home';
 export const UNIX = 'UNIX';
 export const MACOS = 'MACOS';
 export const WINDOWS = 'WINDOWS';
-export const CODESIGNTOOL_VERSION = 'v1.2.7';
+export const CODESIGNTOOL_VERSION = 'v1.3.0';
 export const CODESIGNTOOL_BASEPATH = `CodeSignTool-${CODESIGNTOOL_VERSION}`;
 
 export const CODESIGNTOOL_WINDOWS_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${CODESIGNTOOL_VERSION}/CodeSignTool-${CODESIGNTOOL_VERSION}-windows.zip`;
