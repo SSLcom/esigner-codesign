@@ -122,9 +122,9 @@ export function setCommand(inputKey: string, command: string, action: string): s
     }
 
     if (inputKey == INPUT_USERNAME) {
-        command = `${command} -username=${input}`;
+        command = `${command} -username="${input}"`;
     } else if (inputKey == INPUT_PASSWORD) {
-        command = `${command} -password=${input}`;
+        command = `${command} -password="${input}"`;
     } else if (inputKey == INPUT_CREDENTIAL_ID) {
         command = `${command} -credential_id=${input}`;
     } else if (inputKey == INPUT_TOTP_SECRET) {

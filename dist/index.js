@@ -815,10 +815,10 @@ function setCommand(inputKey, command, action) {
         return command;
     }
     if (inputKey == constants_1.INPUT_USERNAME) {
-        command = `${command} -username=${input}`;
+        command = `${command} -username="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_PASSWORD) {
-        command = `${command} -password=${input}`;
+        command = `${command} -password="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_CREDENTIAL_ID) {
         command = `${command} -credential_id=${input}`;

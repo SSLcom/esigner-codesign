@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: |
           npm --version && node --version
           npm install
@@ -22,7 +22,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: ['build']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create Input file for test signing
         shell: bash
@@ -44,7 +44,7 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign.ps1
           path: ./artifacts/codesign.ps1
@@ -56,7 +56,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: ['build']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create Input file for test signing
         shell: bash
@@ -78,7 +78,7 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-space.exe
           path: ./artifacts/sample file.exe
@@ -90,7 +90,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: ['build']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create Input file for test signing
         shell: bash
@@ -112,7 +112,7 @@ jobs:
           clean_logs: true
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-override.ps1
           path: ./example/codesign.ps1
@@ -144,7 +144,7 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-external.ps1
           path: ./artifacts/codesign.ps1
@@ -156,7 +156,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: ['build']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create Input file for test signing
         shell: bash
@@ -192,13 +192,13 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files (1)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign.ps1
           path: ./artifacts/codesign1.ps1
 
       - name: Upload Signed Files (2)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign.ps1
           path: ./artifacts/codesign2.ps1
@@ -210,7 +210,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: ['sign', 'sign-override', 'sign-external']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create multiple Input file for test signing
         shell: bash
@@ -235,7 +235,7 @@ jobs:
           jvm_max_memory: 4096M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: batch-sign
           path: ./artifacts
@@ -247,7 +247,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: ['batch-sign']
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Create multiple Input file for test signing
         shell: bash
@@ -273,7 +273,7 @@ jobs:
           jvm_max_memory: 4096M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: batch-sign
           path: ./artifacts
