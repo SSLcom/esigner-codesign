@@ -44,7 +44,7 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: sign.ps1
           path: ./artifacts/codesign.ps1
@@ -78,7 +78,7 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: sign-space.exe
           path: ./artifacts/sample file.exe
@@ -112,7 +112,7 @@ jobs:
           clean_logs: true
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: sign-override.ps1
           path: ./example/codesign.ps1
@@ -144,7 +144,7 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: sign-external.ps1
           path: ./artifacts/codesign.ps1
@@ -192,13 +192,13 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files (1)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: sign.ps1
           path: ./artifacts/codesign1.ps1
 
       - name: Upload Signed Files (2)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: sign.ps1
           path: ./artifacts/codesign2.ps1
@@ -235,7 +235,7 @@ jobs:
           jvm_max_memory: 4096M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: batch-sign
           path: ./artifacts
@@ -273,7 +273,7 @@ jobs:
           jvm_max_memory: 4096M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: batch-sign
           path: ./artifacts
