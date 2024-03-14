@@ -45,7 +45,7 @@ export class CodeSigner {
         if (!existsSync(archivePath)) {
             core.info(`Downloading CodeSignTool from ${link}`);
             const downloadedFile = await tc.downloadTool(link);
-            await extractZip(downloadedFile, codesigner);
+            await extractZip(downloadedFile, path.join(codesigner, CODESIGNTOOL_BASEPATH));
             core.info(`Extract CodeSignTool from download path ${downloadedFile} to ${codesigner}`);
 
             const archiveName = fs.readdirSync(codesigner)[0];
@@ -69,7 +69,7 @@ export class CodeSigner {
 
         let execCmd = path.join(archivePath, cmd);
         const execData = readFileSync(execCmd, { encoding: 'utf-8', flag: 'r' });
-        const result = execData.replace(/java -cp/g, `java -Xmx${jvmMaxMemory} -cp`);
+        const result = execData.replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`).replace(/\$@/g, `"\$@"`);
         core.info(`Exec Cmd Content: ${result}`);
         writeFileSync(execCmd, result, { encoding: 'utf-8', flag: 'w' });
         chmodSync(execCmd, '0755');
