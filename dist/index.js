@@ -267,10 +267,13 @@ class CodeSigner {
             core.info(`Write CodeSignTool config file ${sourceConfig} to ${destConfig}`);
             (0, fs_1.writeFileSync)(destConfig, sourceConfig, { encoding: 'utf-8', flag: 'w' });
             core.info(`Set CODE_SIGN_TOOL_PATH env variable: ${archivePath}`);
-            process.env['CODE_SIGN_TOOL_PATH'] = archivePath;
+            core.exportVariable(`CODE_SIGN_TOOL_PATH`, archivePath);
             let execCmd = path_1.default.join(archivePath, cmd);
             const execData = (0, fs_1.readFileSync)(execCmd, { encoding: 'utf-8', flag: 'r' });
-            const result = execData.replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`).replace(/\$@/g, `"\$@"`);
+            const result = execData
+                .replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`)
+                .replace(/\$@/g, `"\$@"`)
+                .replace(/%CODE_SIGN_TOOL_PATH%/g, archivePath);
             core.info(`Exec Cmd Content: ${result}`);
             (0, fs_1.writeFileSync)(execCmd, result, { encoding: 'utf-8', flag: 'w' });
             (0, fs_1.chmodSync)(execCmd, '0755');

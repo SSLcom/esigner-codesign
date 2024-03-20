@@ -65,11 +65,14 @@ export class CodeSigner {
         writeFileSync(destConfig, sourceConfig, { encoding: 'utf-8', flag: 'w' });
 
         core.info(`Set CODE_SIGN_TOOL_PATH env variable: ${archivePath}`);
-        process.env['CODE_SIGN_TOOL_PATH'] = archivePath;
+        core.exportVariable(`CODE_SIGN_TOOL_PATH`, archivePath);
 
         let execCmd = path.join(archivePath, cmd);
         const execData = readFileSync(execCmd, { encoding: 'utf-8', flag: 'r' });
-        const result = execData.replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`).replace(/\$@/g, `"\$@"`);
+        const result = execData
+            .replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`)
+            .replace(/\$@/g, `"\$@"`)
+            .replace(/%CODE_SIGN_TOOL_PATH%/g, archivePath);
         core.info(`Exec Cmd Content: ${result}`);
         writeFileSync(execCmd, result, { encoding: 'utf-8', flag: 'w' });
         chmodSync(execCmd, '0755');
