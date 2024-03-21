@@ -18,13 +18,14 @@ async function run(): Promise<void> {
         let command = inputCommands(action);
         core.info(`Input Commands: ${command}`);
 
-        const javaVersion = parseInt(process.env['JAVA_VERSION'] ?? '0');
-        const javaHome = process.env['JAVA_HOME'] ?? '';
+        let javaVersion = parseInt(process.env['JAVA_VERSION'] ?? '0');
+        let javaHome = process.env['JAVA_HOME'] ?? '';
         core.info(`JDK home: ${javaHome}`);
         core.info(`JDK version: ${javaVersion}`);
         if (javaVersion < 11) {
             const distribution = new JavaDistribution();
             await distribution.setup();
+            javaHome = process.env['JAVA_HOME'] ?? '';
         } else {
             core.info(`JDK is already installed ${javaHome}`);
         }

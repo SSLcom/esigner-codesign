@@ -26,7 +26,6 @@ jobs:
         run: |
           mkdir -p ${GITHUB_WORKSPACE}/example
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign1.ps1
-          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign2.ps1
 
       - uses: ./
         with:
@@ -40,6 +39,27 @@ jobs:
           malware_block: false
           environment_name: TEST
           jvm_max_memory: 2048M
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v3
+        with:
+          name: sign1.ps1
+          path: ./artifacts/codesign1.ps1
+
+  sign-v2:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    needs: ['build']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com!"' > ${GITHUB_WORKSPACE}/example/codesign2.ps1
 
       - uses: ./
         with:
@@ -59,12 +79,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: sign1.ps1
-          path: ./artifacts/codesign1.ps1
-
-      - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
-        with:
-          name: sign2.ps1
           path: ./artifacts/codesign2.ps1
 
   sign-input-space:

@@ -118,7 +118,7 @@ const codesigner_1 = __nccwpck_require__(6598);
 const installer_1 = __nccwpck_require__(2507);
 const util_1 = __nccwpck_require__(4024);
 function run() {
-    var _a, _b;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             core.debug('Run CodeSigner');
@@ -126,13 +126,14 @@ function run() {
             let action = `${core.getInput(constants_1.INPUT_COMMAND)}`;
             let command = (0, util_1.inputCommands)(action);
             core.info(`Input Commands: ${command}`);
-            const javaVersion = parseInt((_a = process.env['JAVA_VERSION']) !== null && _a !== void 0 ? _a : '0');
-            const javaHome = (_b = process.env['JAVA_HOME']) !== null && _b !== void 0 ? _b : '';
+            let javaVersion = parseInt((_a = process.env['JAVA_VERSION']) !== null && _a !== void 0 ? _a : '0');
+            let javaHome = (_b = process.env['JAVA_HOME']) !== null && _b !== void 0 ? _b : '';
             core.info(`JDK home: ${javaHome}`);
             core.info(`JDK version: ${javaVersion}`);
             if (javaVersion < 11) {
                 const distribution = new installer_1.JavaDistribution();
                 yield distribution.setup();
+                javaHome = (_c = process.env['JAVA_HOME']) !== null && _c !== void 0 ? _c : '';
             }
             else {
                 core.info(`JDK is already installed ${javaHome}`);
