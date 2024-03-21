@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import * as exec from '@actions/exec';
 import * as tc from '@actions/tool-cache';
 
-import fs, { copyFileSync, mkdirSync, writeFileSync, chmodSync, readFileSync, existsSync } from 'fs';
+import fs, { mkdirSync, writeFileSync, chmodSync, readFileSync, existsSync } from 'fs';
 import path from 'path';
 import {
     CODESIGNTOOL_UNIX_RUN_CMD,
@@ -36,8 +36,9 @@ export class CodeSigner {
         const workingPath = path.resolve(process.cwd());
         listFiles(workingPath);
 
-        let link = getPlatform() == WINDOWS ? CODESIGNTOOL_WINDOWS_SETUP : CODESIGNTOOL_UNIX_SETUP;
-        let cmd = getPlatform() == WINDOWS ? CODESIGNTOOL_WINDOWS_RUN_CMD : CODESIGNTOOL_UNIX_RUN_CMD;
+        const platform = getPlatform();
+        let link = platform == WINDOWS ? CODESIGNTOOL_WINDOWS_SETUP : CODESIGNTOOL_UNIX_SETUP;
+        let cmd = platform == WINDOWS ? CODESIGNTOOL_WINDOWS_RUN_CMD : CODESIGNTOOL_UNIX_RUN_CMD;
 
         const codesigner = path.resolve(process.cwd(), 'codesign');
         if (!existsSync(codesigner)) {
@@ -81,19 +82,11 @@ export class CodeSigner {
             writeFileSync(execCmd, result, { encoding: 'utf-8', flag: 'w' });
             chmodSync(execCmd, '0755');
         } else {
-            execCmd = path.join(archivePath, cmd);
-            let result = getPlatform() == WINDOWS ? CODESIGNTOOL_WINDOWS_SIGNING_COMMAND : CODESIGNTOOL_UNIX_SIGNING_COMMAND;
-            result = result.replace(/\${{ CODE_SIGN_TOOL_PATH }}/g, archivePath).replace(/\${{ JVM_MAX_MEMORY }}/g, jvmMaxMemory);
-            core.info(`Exec Cmd Content: ${result}`);
-            writeFileSync(execCmd, result, { encoding: 'utf-8', flag: 'w' });
-            chmodSync(execCmd, '0755');
+            execCmd = platform == WINDOWS ? CODESIGNTOOL_WINDOWS_SIGNING_COMMAND : CODESIGNTOOL_UNIX_SIGNING_COMMAND;
+            execCmd = execCmd.replace(/\${{ CODE_SIGN_TOOL_PATH }}/g, archivePath).replace(/\${{ JVM_MAX_MEMORY }}/g, jvmMaxMemory);
         }
 
-        const shellCmd = userShell();
-        if (getPlatform() == WINDOWS) {
-            await exec.getExecOutput(`${shellCmd} systeminfo | findstr Build`, [], { windowsVerbatimArguments: false });
-        }
-
+        const shellCmd = userShell(signingMethod);
         core.info(`Shell Cmd: ${shellCmd}`);
         core.info(`Exec Cmd : ${execCmd}`);
         execCmd = shellCmd + ' ' + execCmd;

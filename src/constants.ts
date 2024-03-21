@@ -14,8 +14,8 @@ export const CODESIGNTOOL_UNIX_SETUP = `https://github.com/SSLcom/CodeSignTool/r
 
 export const CODESIGNTOOL_WINDOWS_RUN_CMD = 'CodeSignTool.bat';
 export const CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
-export const CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ CODE_SIGN_TOOL_PATH }}\\jdk-11.0.2\\bin\\java.exe -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.0.jar %*';
-export const CODESIGNTOOL_UNIX_SIGNING_COMMAND = 'java -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.0.jar "$@"';
+export const CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.0.jar';
+export const CODESIGNTOOL_UNIX_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.0.jar';
 
 export const ACTION_SIGN = 'sign';
 export const ACTION_BATCH_SIGN = 'batch_sign';

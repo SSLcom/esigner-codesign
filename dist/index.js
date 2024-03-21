@@ -37,8 +37,8 @@ exports.CODESIGNTOOL_WINDOWS_SETUP = `https://github.com/SSLcom/CodeSignTool/rel
 exports.CODESIGNTOOL_UNIX_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${exports.CODESIGNTOOL_VERSION}/CodeSignTool-${exports.CODESIGNTOOL_VERSION}.zip`;
 exports.CODESIGNTOOL_WINDOWS_RUN_CMD = 'CodeSignTool.bat';
 exports.CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
-exports.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ CODE_SIGN_TOOL_PATH }}\\jdk-11.0.2\\bin\\java.exe -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.0.jar %*';
-exports.CODESIGNTOOL_UNIX_SIGNING_COMMAND = 'java -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.0.jar "$@"';
+exports.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.0.jar';
+exports.CODESIGNTOOL_UNIX_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.0.jar';
 exports.ACTION_SIGN = 'sign';
 exports.ACTION_BATCH_SIGN = 'batch_sign';
 exports.ACTION_SCAN_CODE = 'scan_code';
@@ -126,10 +126,6 @@ function run() {
             let action = `${core.getInput(constants_1.INPUT_COMMAND)}`;
             let command = (0, util_1.inputCommands)(action);
             core.info(`Input Commands: ${command}`);
-            const codesigner = new codesigner_1.CodeSigner();
-            const execCommand = yield codesigner.setup();
-            command = `${execCommand} ${command}`;
-            core.info(`CodeSigner Command: ${command}`);
             const javaVersion = parseInt((_a = process.env['JAVA_VERSION']) !== null && _a !== void 0 ? _a : '0');
             const javaHome = (_b = process.env['JAVA_HOME']) !== null && _b !== void 0 ? _b : '';
             core.info(`JDK home: ${javaHome}`);
@@ -141,6 +137,11 @@ function run() {
             else {
                 core.info(`JDK is already installed ${javaHome}`);
             }
+            const codesigner = new codesigner_1.CodeSigner();
+            let execCommand = yield codesigner.setup();
+            execCommand = execCommand.replace(/\${{ JAVA_HOME }}/g, `${javaHome}/bin/java`);
+            command = `${execCommand} ${command}`;
+            core.info(`CodeSigner Command: ${command}`);
             let malware_scan = `${core.getInput(constants_1.INPUT_MALWARE_BLOCK, { required: false })}`;
             core.info(`Malware scan is: ${malware_scan.toUpperCase() == 'TRUE' ? 'enabled' : 'disabled'}`);
             if (action == constants_1.ACTION_BATCH_SIGN && malware_scan.toUpperCase() == 'TRUE') {
@@ -242,8 +243,9 @@ class CodeSigner {
         return __awaiter(this, void 0, void 0, function* () {
             const workingPath = path_1.default.resolve(process.cwd());
             (0, util_1.listFiles)(workingPath);
-            let link = (0, util_1.getPlatform)() == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_SETUP : constants_1.CODESIGNTOOL_UNIX_SETUP;
-            let cmd = (0, util_1.getPlatform)() == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_RUN_CMD : constants_1.CODESIGNTOOL_UNIX_RUN_CMD;
+            const platform = (0, util_1.getPlatform)();
+            let link = platform == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_SETUP : constants_1.CODESIGNTOOL_UNIX_SETUP;
+            let cmd = platform == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_RUN_CMD : constants_1.CODESIGNTOOL_UNIX_RUN_CMD;
             const codesigner = path_1.default.resolve(process.cwd(), 'codesign');
             if (!(0, fs_1.existsSync)(codesigner)) {
                 (0, fs_1.mkdirSync)(codesigner);
@@ -280,17 +282,10 @@ class CodeSigner {
                 (0, fs_1.chmodSync)(execCmd, '0755');
             }
             else {
-                execCmd = path_1.default.join(archivePath, cmd);
-                let result = (0, util_1.getPlatform)() == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND : constants_1.CODESIGNTOOL_UNIX_SIGNING_COMMAND;
-                result = result.replace(/\${{ CODE_SIGN_TOOL_PATH }}/g, archivePath).replace(/\${{ JVM_MAX_MEMORY }}/g, jvmMaxMemory);
-                core.info(`Exec Cmd Content: ${result}`);
-                (0, fs_1.writeFileSync)(execCmd, result, { encoding: 'utf-8', flag: 'w' });
-                (0, fs_1.chmodSync)(execCmd, '0755');
+                execCmd = platform == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND : constants_1.CODESIGNTOOL_UNIX_SIGNING_COMMAND;
+                execCmd = execCmd.replace(/\${{ CODE_SIGN_TOOL_PATH }}/g, archivePath).replace(/\${{ JVM_MAX_MEMORY }}/g, jvmMaxMemory);
             }
-            const shellCmd = (0, util_1.userShell)();
-            if ((0, util_1.getPlatform)() == constants_1.WINDOWS) {
-                yield exec.getExecOutput(`${shellCmd} systeminfo | findstr Build`, [], { windowsVerbatimArguments: false });
-            }
+            const shellCmd = (0, util_1.userShell)(signingMethod);
             core.info(`Shell Cmd: ${shellCmd}`);
             core.info(`Exec Cmd : ${execCmd}`);
             execCmd = shellCmd + ' ' + execCmd;
@@ -882,12 +877,15 @@ function replaceEnv(input) {
     return input;
 }
 exports.replaceEnv = replaceEnv;
-function userShell() {
+function userShell(signingMethod) {
     var _a, _b;
     const { env } = process;
     const platform = getPlatform();
     if (platform == constants_1.WINDOWS) {
         return 'cmd.exe -/c';
+    }
+    if (signingMethod == constants_1.SIGNING_METHOD_V2) {
+        return '';
     }
     try {
         const shell = (0, os_1.userInfo)();

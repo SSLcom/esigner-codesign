@@ -19,7 +19,8 @@ import {
     MACOS,
     UNIX,
     WINDOWS,
-    SUPPORT_COMMANDS
+    SUPPORT_COMMANDS,
+    SIGNING_METHOD_V2
 } from './constants';
 
 export function getTempDir() {
@@ -163,12 +164,15 @@ export function replaceEnv(input: string): string {
     return input;
 }
 
-export function userShell(): string | null {
+export function userShell(signingMethod: string): string | null {
     const { env } = process;
 
     const platform = getPlatform();
     if (platform == WINDOWS) {
         return 'cmd.exe -/c';
+    }
+    if (signingMethod == SIGNING_METHOD_V2) {
+        return '';
     }
 
     try {

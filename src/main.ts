@@ -3,11 +3,11 @@ import * as exec from '@actions/exec';
 
 import fs from 'fs';
 import path from 'path';
-import { ACTION_BATCH_SIGN, INPUT_CLEAN_LOGS, INPUT_COMMAND, INPUT_MALWARE_BLOCK, INPUT_SIGNING_METHOD, SIGNING_METHOD_V1 } from './constants';
+import { ACTION_BATCH_SIGN, INPUT_CLEAN_LOGS, INPUT_COMMAND, INPUT_MALWARE_BLOCK, INPUT_SIGNING_METHOD, SIGNING_METHOD_V1, SIGNING_METHOD_V2, WINDOWS } from './constants';
 
 import { CodeSigner } from './setup-codesigner/codesigner';
 import { JavaDistribution } from './setup-jdk/installer';
-import { inputCommands } from './util';
+import { getPlatform, inputCommands } from './util';
 
 async function run(): Promise<void> {
     try {
@@ -17,12 +17,6 @@ async function run(): Promise<void> {
         let action = `${core.getInput(INPUT_COMMAND)}`;
         let command = inputCommands(action);
         core.info(`Input Commands: ${command}`);
-
-        const codesigner = new CodeSigner();
-        const execCommand = await codesigner.setup();
-
-        command = `${execCommand} ${command}`;
-        core.info(`CodeSigner Command: ${command}`);
 
         const javaVersion = parseInt(process.env['JAVA_VERSION'] ?? '0');
         const javaHome = process.env['JAVA_HOME'] ?? '';
@@ -34,6 +28,12 @@ async function run(): Promise<void> {
         } else {
             core.info(`JDK is already installed ${javaHome}`);
         }
+
+        const codesigner = new CodeSigner();
+        let execCommand = await codesigner.setup();
+        execCommand = execCommand.replace(/\${{ JAVA_HOME }}/g, `${javaHome}/bin/java`);
+        command = `${execCommand} ${command}`;
+        core.info(`CodeSigner Command: ${command}`);
 
         let malware_scan = `${core.getInput(INPUT_MALWARE_BLOCK, { required: false })}`;
         core.info(`Malware scan is: ${malware_scan.toUpperCase() == 'TRUE' ? 'enabled' : 'disabled'}`);
