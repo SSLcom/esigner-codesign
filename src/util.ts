@@ -126,11 +126,11 @@ export function setCommand(inputKey: string, command: string, action: string): s
     } else if (inputKey == INPUT_PASSWORD) {
         command = `${command} -password="${input}"`;
     } else if (inputKey == INPUT_CREDENTIAL_ID) {
-        command = `${command} -credential_id=${input}`;
+        command = `${command} -credential_id="${input}"`;
     } else if (inputKey == INPUT_TOTP_SECRET) {
-        command = `${command} -totp_secret=${input}`;
+        command = `${command} -totp_secret="${input}"`;
     } else if (inputKey == INPUT_PROGRAM_NAME) {
-        command = `${command} -program_name=${input}`;
+        command = `${command} -program_name="${input}"`;
     } else if (inputKey == INPUT_FILE_PATH) {
         input = path.normalize(input);
         command = `${command} -input_file_path="${input}"`;
@@ -145,7 +145,7 @@ export function setCommand(inputKey: string, command: string, action: string): s
             core.info(`Creating CodeSignTool output path ${input}`);
             fs.mkdirSync(input);
         }
-        command = `${command} -output_dir_path=${input}`;
+        command = `${command} -output_dir_path="${input}"`;
     } else if (inputKey == INPUT_MALWARE_BLOCK) {
         command = `${command} -malware_block=${input}`;
     } else if (inputKey == INPUT_OVERRIDE) {

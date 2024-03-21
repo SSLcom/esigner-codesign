@@ -53,5 +53,8 @@
 
     # Maximumx JVM heap size
     jvm_max_memory: 1024M
+
+    # Code signing method. Default is v1. Supported values: v1, v2
+    signing_method: v1
 ```
 <!-- end usage -->

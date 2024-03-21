@@ -8,11 +8,7 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CODESIGNTOOL_DEMO_PROPERTIES = exports.CODESIGNTOOL_PROPERTIES = void 0;
-exports.CODESIGNTOOL_PROPERTIES = 'CLIENT_ID=kaXTRACNijSWsFdRKg_KAfD3fqrBlzMbWs6TwWHwAn8\n' +
-    'OAUTH2_ENDPOINT=https://login.ssl.com/oauth2/token\n' +
-    'CSC_API_ENDPOINT=https://cs.ssl.com\n' +
-    'TSA_URL=http://ts.ssl.com\n' +
-    'TSA_LEGACY_URL=http://ts.ssl.com/legacy';
+exports.CODESIGNTOOL_PROPERTIES = 'CLIENT_ID=kaXTRACNijSWsFdRKg_KAfD3fqrBlzMbWs6TwWHwAn8\n' + 'OAUTH2_ENDPOINT=https://login.ssl.com/oauth2/token\n' + 'CSC_API_ENDPOINT=https://cs.ssl.com\n' + 'TSA_URL=http://ts.ssl.com\n' + 'TSA_LEGACY_URL=http://ts.ssl.com/legacy';
 exports.CODESIGNTOOL_DEMO_PROPERTIES = 'CLIENT_ID=qOUeZCCzSqgA93acB3LYq6lBNjgZdiOxQc-KayC3UMw\n' +
     'OAUTH2_ENDPOINT=https://oauth-sandbox.ssl.com/oauth2/token\n' +
     'CSC_API_ENDPOINT=https://cs-try.ssl.com\n' +
@@ -28,17 +24,21 @@ exports.CODESIGNTOOL_DEMO_PROPERTIES = 'CLIENT_ID=qOUeZCCzSqgA93acB3LYq6lBNjgZdi
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_JVM_MAX_MEMORY = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.SUPPORT_COMMANDS = exports.ACTION_SCAN_CODE = exports.ACTION_BATCH_SIGN = exports.ACTION_SIGN = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.CODESIGNTOOL_BASEPATH = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
+exports.SANDBOX_ENVIRONMENT_NAME = exports.PRODUCTION_ENVIRONMENT_NAME = exports.INPUT_SIGNING_METHOD = exports.INPUT_JVM_MAX_MEMORY = exports.INPUT_ENVIRONMENT_NAME = exports.INPUT_CLEAN_LOGS = exports.INPUT_OVERRIDE = exports.INPUT_MALWARE_BLOCK = exports.INPUT_OUTPUT_PATH = exports.INPUT_DIR_PATH = exports.INPUT_FILE_PATH = exports.INPUT_PROGRAM_NAME = exports.INPUT_TOTP_SECRET = exports.INPUT_CREDENTIAL_ID = exports.INPUT_PASSWORD = exports.INPUT_USERNAME = exports.INPUT_COMMAND = exports.SUPPORT_COMMANDS = exports.ACTION_SCAN_CODE = exports.ACTION_BATCH_SIGN = exports.ACTION_SIGN = exports.CODESIGNTOOL_UNIX_SIGNING_COMMAND = exports.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = exports.CODESIGNTOOL_UNIX_RUN_CMD = exports.CODESIGNTOOL_WINDOWS_RUN_CMD = exports.CODESIGNTOOL_UNIX_SETUP = exports.CODESIGNTOOL_WINDOWS_SETUP = exports.SIGNING_METHOD_V2 = exports.SIGNING_METHOD_V1 = exports.CODESIGNTOOL_BASEPATH = exports.CODESIGNTOOL_VERSION = exports.WINDOWS = exports.MACOS = exports.UNIX = exports.MACOS_JAVA_CONTENT_POSTFIX = void 0;
 exports.MACOS_JAVA_CONTENT_POSTFIX = 'Contents/Home';
 exports.UNIX = 'UNIX';
 exports.MACOS = 'MACOS';
 exports.WINDOWS = 'WINDOWS';
 exports.CODESIGNTOOL_VERSION = 'v1.3.0';
 exports.CODESIGNTOOL_BASEPATH = `CodeSignTool-${exports.CODESIGNTOOL_VERSION}`;
+exports.SIGNING_METHOD_V1 = 'v1';
+exports.SIGNING_METHOD_V2 = 'v2';
 exports.CODESIGNTOOL_WINDOWS_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${exports.CODESIGNTOOL_VERSION}/CodeSignTool-${exports.CODESIGNTOOL_VERSION}-windows.zip`;
 exports.CODESIGNTOOL_UNIX_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${exports.CODESIGNTOOL_VERSION}/CodeSignTool-${exports.CODESIGNTOOL_VERSION}.zip`;
 exports.CODESIGNTOOL_WINDOWS_RUN_CMD = 'CodeSignTool.bat';
 exports.CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
+exports.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ CODE_SIGN_TOOL_PATH }}\\jdk-11.0.2\\bin\\java.exe -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.0.jar %*';
+exports.CODESIGNTOOL_UNIX_SIGNING_COMMAND = 'java -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.0.jar "$@"';
 exports.ACTION_SIGN = 'sign';
 exports.ACTION_BATCH_SIGN = 'batch_sign';
 exports.ACTION_SCAN_CODE = 'scan_code';
@@ -61,6 +61,7 @@ exports.INPUT_OVERRIDE = 'override';
 exports.INPUT_CLEAN_LOGS = 'clean_logs';
 exports.INPUT_ENVIRONMENT_NAME = 'environment_name';
 exports.INPUT_JVM_MAX_MEMORY = 'jvm_max_memory';
+exports.INPUT_SIGNING_METHOD = 'signing_method';
 exports.PRODUCTION_ENVIRONMENT_NAME = 'PROD';
 exports.SANDBOX_ENVIRONMENT_NAME = 'TEST';
 
@@ -237,7 +238,7 @@ const util_1 = __nccwpck_require__(4024);
 class CodeSigner {
     constructor() { }
     setup() {
-        var _a, _b, _c;
+        var _a, _b, _c, _d;
         return __awaiter(this, void 0, void 0, function* () {
             const workingPath = path_1.default.resolve(process.cwd());
             (0, util_1.listFiles)(workingPath);
@@ -263,21 +264,33 @@ class CodeSigner {
             const environment = (_b = core.getInput(constants_1.INPUT_ENVIRONMENT_NAME)) !== null && _b !== void 0 ? _b : constants_1.PRODUCTION_ENVIRONMENT_NAME;
             const jvmMaxMemory = (_c = core.getInput(constants_1.INPUT_JVM_MAX_MEMORY)) !== null && _c !== void 0 ? _c : '2048M';
             const sourceConfig = environment == constants_1.PRODUCTION_ENVIRONMENT_NAME ? config_1.CODESIGNTOOL_PROPERTIES : config_1.CODESIGNTOOL_DEMO_PROPERTIES;
+            const signingMethod = (_d = core.getInput(constants_1.INPUT_SIGNING_METHOD)) !== null && _d !== void 0 ? _d : constants_1.SIGNING_METHOD_V1;
             const destConfig = path_1.default.join(archivePath, 'conf/code_sign_tool.properties');
             core.info(`Write CodeSignTool config file ${sourceConfig} to ${destConfig}`);
             (0, fs_1.writeFileSync)(destConfig, sourceConfig, { encoding: 'utf-8', flag: 'w' });
             core.info(`Set CODE_SIGN_TOOL_PATH env variable: ${archivePath}`);
             core.exportVariable(`CODE_SIGN_TOOL_PATH`, archivePath);
-            let execCmd = path_1.default.join(archivePath, cmd);
-            const execData = (0, fs_1.readFileSync)(execCmd, { encoding: 'utf-8', flag: 'r' });
-            const result = execData
-                .replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`)
-                .replace(/\$@/g, `"\$@"`)
-                .replace(/%CODE_SIGN_TOOL_PATH%/g, archivePath);
-            core.info(`Exec Cmd Content: ${result}`);
-            (0, fs_1.writeFileSync)(execCmd, result, { encoding: 'utf-8', flag: 'w' });
-            (0, fs_1.chmodSync)(execCmd, '0755');
+            let execCmd;
+            if (signingMethod == constants_1.SIGNING_METHOD_V1) {
+                execCmd = path_1.default.join(archivePath, cmd);
+                const execData = (0, fs_1.readFileSync)(execCmd, { encoding: 'utf-8', flag: 'r' });
+                const result = execData.replace(/java -jar/g, `java -Xmx${jvmMaxMemory} -jar`).replace(/\$@/g, `"\$@"`);
+                core.info(`Exec Cmd Content: ${result}`);
+                (0, fs_1.writeFileSync)(execCmd, result, { encoding: 'utf-8', flag: 'w' });
+                (0, fs_1.chmodSync)(execCmd, '0755');
+            }
+            else {
+                execCmd = path_1.default.join(archivePath, cmd);
+                let result = (0, util_1.getPlatform)() == constants_1.WINDOWS ? constants_1.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND : constants_1.CODESIGNTOOL_UNIX_SIGNING_COMMAND;
+                result = result.replace(/\${{ CODE_SIGN_TOOL_PATH }}/g, archivePath).replace(/\${{ JVM_MAX_MEMORY }}/g, jvmMaxMemory);
+                core.info(`Exec Cmd Content: ${result}`);
+                (0, fs_1.writeFileSync)(execCmd, result, { encoding: 'utf-8', flag: 'w' });
+                (0, fs_1.chmodSync)(execCmd, '0755');
+            }
             const shellCmd = (0, util_1.userShell)();
+            if ((0, util_1.getPlatform)() == constants_1.WINDOWS) {
+                yield exec.getExecOutput(`${shellCmd} systeminfo | findstr Build`, [], { windowsVerbatimArguments: false });
+            }
             core.info(`Shell Cmd: ${shellCmd}`);
             core.info(`Exec Cmd : ${execCmd}`);
             execCmd = shellCmd + ' ' + execCmd;
@@ -296,7 +309,7 @@ class CodeSigner {
             const files = fs_1.default.readdirSync(input_path);
             for (const file of files) {
                 let fullPath = path_1.default.join(input_path, file);
-                let scan_code = `${command} -input_file_path=${fullPath}`;
+                let scan_code = `${command} -input_file_path="${fullPath}"`;
                 scan_code = `${execCommand} ${scan_code}`;
                 core.info(`CodeSigner scan code command: ${scan_code}`);
                 const result = yield exec.getExecOutput(scan_code, [], { windowsVerbatimArguments: false });
@@ -824,13 +837,13 @@ function setCommand(inputKey, command, action) {
         command = `${command} -password="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_CREDENTIAL_ID) {
-        command = `${command} -credential_id=${input}`;
+        command = `${command} -credential_id="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_TOTP_SECRET) {
-        command = `${command} -totp_secret=${input}`;
+        command = `${command} -totp_secret="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_PROGRAM_NAME) {
-        command = `${command} -program_name=${input}`;
+        command = `${command} -program_name="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_FILE_PATH) {
         input = path_1.default.normalize(input);
@@ -849,7 +862,7 @@ function setCommand(inputKey, command, action) {
             core.info(`Creating CodeSignTool output path ${input}`);
             fs.mkdirSync(input);
         }
-        command = `${command} -output_dir_path=${input}`;
+        command = `${command} -output_dir_path="${input}"`;
     }
     else if (inputKey == constants_1.INPUT_MALWARE_BLOCK) {
         command = `${command} -malware_block=${input}`;

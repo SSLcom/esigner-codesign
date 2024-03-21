@@ -3,7 +3,7 @@ import * as exec from '@actions/exec';
 
 import fs from 'fs';
 import path from 'path';
-import { ACTION_BATCH_SIGN, INPUT_CLEAN_LOGS, INPUT_COMMAND, INPUT_MALWARE_BLOCK } from './constants';
+import { ACTION_BATCH_SIGN, INPUT_CLEAN_LOGS, INPUT_COMMAND, INPUT_MALWARE_BLOCK, INPUT_SIGNING_METHOD, SIGNING_METHOD_V1 } from './constants';
 
 import { CodeSigner } from './setup-codesigner/codesigner';
 import { JavaDistribution } from './setup-jdk/installer';
