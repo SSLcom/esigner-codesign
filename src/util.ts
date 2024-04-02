@@ -169,7 +169,7 @@ export function userShell(signingMethod: string): string | null {
 
     const platform = getPlatform();
     if (platform == WINDOWS) {
-        return 'cmd.exe -/c';
+        return '';
     }
     if (signingMethod == SIGNING_METHOD_V2) {
         return '';

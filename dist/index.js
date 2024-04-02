@@ -8,7 +8,11 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CODESIGNTOOL_DEMO_PROPERTIES = exports.CODESIGNTOOL_PROPERTIES = void 0;
-exports.CODESIGNTOOL_PROPERTIES = 'CLIENT_ID=kaXTRACNijSWsFdRKg_KAfD3fqrBlzMbWs6TwWHwAn8\n' + 'OAUTH2_ENDPOINT=https://login.ssl.com/oauth2/token\n' + 'CSC_API_ENDPOINT=https://cs.ssl.com\n' + 'TSA_URL=http://ts.ssl.com\n' + 'TSA_LEGACY_URL=http://ts.ssl.com/legacy';
+exports.CODESIGNTOOL_PROPERTIES = 'CLIENT_ID=kaXTRACNijSWsFdRKg_KAfD3fqrBlzMbWs6TwWHwAn8\n' +
+    'OAUTH2_ENDPOINT=https://login.ssl.com/oauth2/token\n' +
+    'CSC_API_ENDPOINT=https://cs.ssl.com\n' +
+    'TSA_URL=http://ts.ssl.com\n' +
+    'TSA_LEGACY_URL=http://ts.ssl.com/legacy';
 exports.CODESIGNTOOL_DEMO_PROPERTIES = 'CLIENT_ID=qOUeZCCzSqgA93acB3LYq6lBNjgZdiOxQc-KayC3UMw\n' +
     'OAUTH2_ENDPOINT=https://oauth-sandbox.ssl.com/oauth2/token\n' +
     'CSC_API_ENDPOINT=https://cs-try.ssl.com\n' +
@@ -883,7 +887,7 @@ function userShell(signingMethod) {
     const { env } = process;
     const platform = getPlatform();
     if (platform == constants_1.WINDOWS) {
-        return 'cmd.exe -/c';
+        return '';
     }
     if (signingMethod == constants_1.SIGNING_METHOD_V2) {
         return '';
