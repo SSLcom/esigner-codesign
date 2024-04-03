@@ -6,11 +6,16 @@ export const WINDOWS = 'WINDOWS';
 export const CODESIGNTOOL_VERSION = 'v1.3.0';
 export const CODESIGNTOOL_BASEPATH = `CodeSignTool-${CODESIGNTOOL_VERSION}`;
 
+export const SIGNING_METHOD_V1 = 'v1';
+export const SIGNING_METHOD_V2 = 'v2';
+
 export const CODESIGNTOOL_WINDOWS_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${CODESIGNTOOL_VERSION}/CodeSignTool-${CODESIGNTOOL_VERSION}-windows.zip`;
 export const CODESIGNTOOL_UNIX_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${CODESIGNTOOL_VERSION}/CodeSignTool-${CODESIGNTOOL_VERSION}.zip`;
 
 export const CODESIGNTOOL_WINDOWS_RUN_CMD = 'CodeSignTool.bat';
 export const CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
+export const CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.0.jar';
+export const CODESIGNTOOL_UNIX_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.0.jar';
 
 export const ACTION_SIGN = 'sign';
 export const ACTION_BATCH_SIGN = 'batch_sign';
@@ -36,6 +41,7 @@ export const INPUT_OVERRIDE = 'override';
 export const INPUT_CLEAN_LOGS = 'clean_logs';
 export const INPUT_ENVIRONMENT_NAME = 'environment_name';
 export const INPUT_JVM_MAX_MEMORY = 'jvm_max_memory';
+export const INPUT_SIGNING_METHOD = 'signing_method';
 
 export const PRODUCTION_ENVIRONMENT_NAME = 'PROD';
 export const SANDBOX_ENVIRONMENT_NAME = 'TEST';
