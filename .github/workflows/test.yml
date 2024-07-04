@@ -418,6 +418,7 @@ jobs:
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 1!"' > ${GITHUB_WORKSPACE}/example/batch1.ps1
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 2!"' > ${GITHUB_WORKSPACE}/example/batch2.ps1
           echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 3!"' > ${GITHUB_WORKSPACE}/example/batch3.ps1
+          echo 'Write-Output -InputObject "Happy Signing From ESigner.com for Batch Sign 4!"' > ${GITHUB_WORKSPACE}/example/batch4.ps1
           cp "./sample/minimal.exe" "${GITHUB_WORKSPACE}/example/minimal.exe"
           cp "./sample/minimal.msi" "${GITHUB_WORKSPACE}/example/minimal.msi"
           cp "./sample/sample file.exe" "${GITHUB_WORKSPACE}/example/sample file.exe"
