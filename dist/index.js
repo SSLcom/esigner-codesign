@@ -8,7 +8,11 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.CODESIGNTOOL_DEMO_PROPERTIES = exports.CODESIGNTOOL_PROPERTIES = void 0;
-exports.CODESIGNTOOL_PROPERTIES = 'CLIENT_ID=kaXTRACNijSWsFdRKg_KAfD3fqrBlzMbWs6TwWHwAn8\n' + 'OAUTH2_ENDPOINT=https://login.ssl.com/oauth2/token\n' + 'CSC_API_ENDPOINT=https://cs.ssl.com\n' + 'TSA_URL=http://ts.ssl.com\n' + 'TSA_LEGACY_URL=http://ts.ssl.com/legacy';
+exports.CODESIGNTOOL_PROPERTIES = 'CLIENT_ID=kaXTRACNijSWsFdRKg_KAfD3fqrBlzMbWs6TwWHwAn8\n' +
+    'OAUTH2_ENDPOINT=https://login.ssl.com/oauth2/token\n' +
+    'CSC_API_ENDPOINT=https://cs.ssl.com\n' +
+    'TSA_URL=http://ts.ssl.com\n' +
+    'TSA_LEGACY_URL=http://ts.ssl.com/legacy';
 exports.CODESIGNTOOL_DEMO_PROPERTIES = 'CLIENT_ID=qOUeZCCzSqgA93acB3LYq6lBNjgZdiOxQc-KayC3UMw\n' +
     'OAUTH2_ENDPOINT=https://oauth-sandbox.ssl.com/oauth2/token\n' +
     'CSC_API_ENDPOINT=https://cs-try.ssl.com\n' +
@@ -29,7 +33,7 @@ exports.MACOS_JAVA_CONTENT_POSTFIX = 'Contents/Home';
 exports.UNIX = 'UNIX';
 exports.MACOS = 'MACOS';
 exports.WINDOWS = 'WINDOWS';
-exports.CODESIGNTOOL_VERSION = 'v1.3.0';
+exports.CODESIGNTOOL_VERSION = 'v1.3.1';
 exports.CODESIGNTOOL_BASEPATH = `CodeSignTool-${exports.CODESIGNTOOL_VERSION}`;
 exports.SIGNING_METHOD_V1 = 'v1';
 exports.SIGNING_METHOD_V2 = 'v2';
@@ -37,8 +41,8 @@ exports.CODESIGNTOOL_WINDOWS_SETUP = `https://github.com/SSLcom/CodeSignTool/rel
 exports.CODESIGNTOOL_UNIX_SETUP = `https://github.com/SSLcom/CodeSignTool/releases/download/${exports.CODESIGNTOOL_VERSION}/CodeSignTool-${exports.CODESIGNTOOL_VERSION}.zip`;
 exports.CODESIGNTOOL_WINDOWS_RUN_CMD = 'CodeSignTool.bat';
 exports.CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
-exports.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.0.jar';
-exports.CODESIGNTOOL_UNIX_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.0.jar';
+exports.CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.1.jar';
+exports.CODESIGNTOOL_UNIX_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.1.jar';
 exports.ACTION_SIGN = 'sign';
 exports.ACTION_BATCH_SIGN = 'batch_sign';
 exports.ACTION_SCAN_CODE = 'scan_code';

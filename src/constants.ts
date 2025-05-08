@@ -3,7 +3,7 @@ export const MACOS_JAVA_CONTENT_POSTFIX = 'Contents/Home';
 export const UNIX = 'UNIX';
 export const MACOS = 'MACOS';
 export const WINDOWS = 'WINDOWS';
-export const CODESIGNTOOL_VERSION = 'v1.3.0';
+export const CODESIGNTOOL_VERSION = 'v1.3.1';
 export const CODESIGNTOOL_BASEPATH = `CodeSignTool-${CODESIGNTOOL_VERSION}`;
 
 export const SIGNING_METHOD_V1 = 'v1';
@@ -14,8 +14,8 @@ export const CODESIGNTOOL_UNIX_SETUP = `https://github.com/SSLcom/CodeSignTool/r
 
 export const CODESIGNTOOL_WINDOWS_RUN_CMD = 'CodeSignTool.bat';
 export const CODESIGNTOOL_UNIX_RUN_CMD = 'CodeSignTool.sh';
-export const CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.0.jar';
-export const CODESIGNTOOL_UNIX_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.0.jar';
+export const CODESIGNTOOL_WINDOWS_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}\\jar\\code_sign_tool-1.3.1.jar';
+export const CODESIGNTOOL_UNIX_SIGNING_COMMAND = '${{ JAVA_HOME }} -Xmx${{ JVM_MAX_MEMORY }} -jar ${{ CODE_SIGN_TOOL_PATH }}/jar/code_sign_tool-1.3.1.jar';
 
 export const ACTION_SIGN = 'sign';
 export const ACTION_BATCH_SIGN = 'batch_sign';
