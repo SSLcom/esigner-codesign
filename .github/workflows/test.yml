@@ -41,7 +41,7 @@ jobs:
           jvm_max_memory: 2048M
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign1.ps1
           path: ./artifacts/codesign1.ps1
@@ -76,7 +76,7 @@ jobs:
           signing_method: v2
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign1.ps1
           path: ./artifacts/codesign2.ps1
@@ -125,13 +125,13 @@ jobs:
           signing_method: v2
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-space.exe
           path: ./artifacts/sample file1.exe
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-space.exe
           path: ./artifacts/sample file2.exe
@@ -180,13 +180,13 @@ jobs:
           signing_method: v2
 
       - name: Upload Signed Files (1)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-override1.ps1
           path: ./example/codesign1.ps1
 
       - name: Upload Signed Files (2)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-override2.ps1
           path: ./example/codesign2.ps1
@@ -233,13 +233,13 @@ jobs:
           signing_method: v2
 
       - name: Upload Signed Files (1)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-external1.ps1
           path: ./artifacts/codesign1.ps1
 
       - name: Upload Signed Files (2)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign-external2.ps1
           path: ./artifacts/codesign2.ps1
@@ -288,13 +288,13 @@ jobs:
           signing_method: v2
 
       - name: Upload Signed Files (1)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign1.ps1
           path: ./artifacts/codesign1.ps1
 
       - name: Upload Signed Files (2)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sign2.ps1
           path: ./artifacts/codesign2.ps1
@@ -344,7 +344,7 @@ jobs:
           signing_method: v2
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: batch-sign
           path: ./artifacts
@@ -397,7 +397,7 @@ jobs:
           signing_method: v2
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: batch-sign
           path: ./artifacts
@@ -449,7 +449,7 @@ jobs:
           signing_method: v2
 
       - name: Upload Signed Files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: batch-sign
           path: ./artifacts
