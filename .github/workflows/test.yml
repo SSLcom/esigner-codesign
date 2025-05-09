@@ -43,7 +43,7 @@ jobs:
       - name: Upload Signed Files
         uses: actions/upload-artifact@v4
         with:
-          name: sign1.ps1
+          name: sign1.ps1-${{ matrix.os }}
           path: ./artifacts/codesign1.ps1
 
   sign-v2:
@@ -78,7 +78,7 @@ jobs:
       - name: Upload Signed Files
         uses: actions/upload-artifact@v4
         with:
-          name: sign1.ps1
+          name: sign2.ps1-${{ matrix.os }}
           path: ./artifacts/codesign2.ps1
 
   sign-input-space:
@@ -127,13 +127,13 @@ jobs:
       - name: Upload Signed Files
         uses: actions/upload-artifact@v4
         with:
-          name: sign-space.exe
+          name: sign-space1.exe-${{ matrix.os }}
           path: ./artifacts/sample file1.exe
 
       - name: Upload Signed Files
         uses: actions/upload-artifact@v4
         with:
-          name: sign-space.exe
+          name: sign-space2.exe-${{ matrix.os }}
           path: ./artifacts/sample file2.exe
 
   sign-override:
@@ -182,13 +182,13 @@ jobs:
       - name: Upload Signed Files (1)
         uses: actions/upload-artifact@v4
         with:
-          name: sign-override1.ps1
+          name: sign-override1.ps1-${{ matrix.os }}
           path: ./example/codesign1.ps1
 
       - name: Upload Signed Files (2)
         uses: actions/upload-artifact@v4
         with:
-          name: sign-override2.ps1
+          name: sign-override2.ps1-${{ matrix.os }}
           path: ./example/codesign2.ps1
 
   sign-external:
@@ -235,13 +235,13 @@ jobs:
       - name: Upload Signed Files (1)
         uses: actions/upload-artifact@v4
         with:
-          name: sign-external1.ps1
+          name: sign-external1.ps1-${{ matrix.os }}
           path: ./artifacts/codesign1.ps1
 
       - name: Upload Signed Files (2)
         uses: actions/upload-artifact@v4
         with:
-          name: sign-external2.ps1
+          name: sign-external2.ps1-${{ matrix.os }}
           path: ./artifacts/codesign2.ps1
 
   sign-multi-same-job:
@@ -290,13 +290,13 @@ jobs:
       - name: Upload Signed Files (1)
         uses: actions/upload-artifact@v4
         with:
-          name: sign1.ps1
+          name: sign3.ps1-${{ matrix.os }}
           path: ./artifacts/codesign1.ps1
 
       - name: Upload Signed Files (2)
         uses: actions/upload-artifact@v4
         with:
-          name: sign2.ps1
+          name: sign4.ps1-${{ matrix.os }}
           path: ./artifacts/codesign2.ps1
 
   batch-sign:
@@ -346,7 +346,7 @@ jobs:
       - name: Upload Signed Files
         uses: actions/upload-artifact@v4
         with:
-          name: batch-sign
+          name: batch-sign-${{ matrix.os }}
           path: ./artifacts
 
   batch-sign-scan-code:
@@ -399,7 +399,7 @@ jobs:
       - name: Upload Signed Files
         uses: actions/upload-artifact@v4
         with:
-          name: batch-sign
+          name: batch-sign1-${{ matrix.os }}
           path: ./artifacts
 
   batch-sign-credential-id:
@@ -451,5 +451,5 @@ jobs:
       - name: Upload Signed Files
         uses: actions/upload-artifact@v4
         with:
-          name: batch-sign
+          name: batch-sign2-${{ matrix.os }}
           path: ./artifacts
