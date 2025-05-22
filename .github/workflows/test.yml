@@ -407,7 +407,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    needs: ['sign', 'sign-override', 'sign-external']
+    needs: ['batch-sign', 'batch-sign-scan-code']
     steps:
       - uses: actions/checkout@v4
 
