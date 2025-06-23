@@ -29,7 +29,7 @@
     totp_secret: ${{secrets.ES_TOTP_SECRET}}
 
     # Path of code object to be signed.
-    # Supported File Types: acm, ax, bin, cab, cpl, dll, drv, efi, exe, mui, ocx, scr, sys, tsp, msi, ps1, ps1xml, js, vbs, wsf, jar
+    # Supported File Types: acm, ax, bin, cab, cpl, dll, drv, efi, exe, mui, ocx, scr, sys, tsp, msi, ps1, ps1xml, js, vbs, wsf, jar, ovf, ova, nupkg
     file_path: ${GITHUB_WORKSPACE}/test/src/build/HelloWorld.jar
 
     # Input directory for code objects to be signed, have hashes computed, or pick unsigned files and corresponding hashes for signing.

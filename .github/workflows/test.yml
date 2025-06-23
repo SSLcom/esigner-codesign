@@ -51,7 +51,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    needs: ['build']
+    needs: ['build', 'sign']
     steps:
       - uses: actions/checkout@v4
 
@@ -86,7 +86,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    needs: ['build']
+    needs: ['build', 'sign', 'sign-v2']
     steps:
       - uses: actions/checkout@v4
 
@@ -141,7 +141,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    needs: ['build']
+    needs: ['build', 'sign', 'sign-v2', 'sign-input-space']
     steps:
       - uses: actions/checkout@v4
 
@@ -196,7 +196,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    needs: ['build']
+    needs: ['build', 'sign', 'sign-v2', 'sign-input-space', 'sign-override']
     steps:
       - name: Create Input file for test signing
         shell: bash
@@ -249,7 +249,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    needs: ['build']
+    needs: ['build', 'sign', 'sign-v2', 'sign-input-space', 'sign-override', 'sign-external']
     steps:
       - uses: actions/checkout@v4
 
@@ -299,12 +299,46 @@ jobs:
           name: sign4.ps1-${{ matrix.os }}
           path: ./artifacts/codesign2.ps1
 
+  sign-nupkg:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+    runs-on: ${{ matrix.os }}
+    needs: ['build', 'sign', 'sign-v2', 'sign-input-space', 'sign-override', 'sign-external', 'sign-multi-same-job']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create Input file for test signing
+        shell: bash
+        run: |
+          mkdir -p ${GITHUB_WORKSPACE}/example
+          cp "./sample/minimal.1.0.0.nupkg" "${GITHUB_WORKSPACE}/example/minimal.1.0.0.nupkg"
+
+      - uses: ./
+        with:
+          command: sign
+          username: ${{ secrets.ES_USERNAME }}
+          password: ${{ secrets.ES_PASSWORD }}
+          credential_id: ${{ secrets.CREDENTIAL_ID }}
+          totp_secret: ${{ secrets.ES_TOTP_SECRET }}
+          file_path: ${GITHUB_WORKSPACE}/example/minimal.1.0.0.nupkg
+          output_path: ${GITHUB_WORKSPACE}/artifacts
+          malware_block: false
+          environment_name: TEST
+          jvm_max_memory: 2048M
+
+      - name: Upload Signed Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: sign1.nupkg-${{ matrix.os }}
+          path: ./artifacts/minimal.1.0.0.nupkg
+
   batch-sign:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
     runs-on: ${{ matrix.os }}
-    needs: ['sign', 'sign-override', 'sign-external']
+    needs: ['sign', 'sign-v2', 'sign-input-space', 'sign-override', 'sign-external', 'sign-multi-same-job', 'sign-nupkg']
     steps:
       - uses: actions/checkout@v4
 
